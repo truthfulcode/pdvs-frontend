@@ -9,16 +9,27 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.9.9",
+    "@coinbase/wallet-sdk": "^3.9.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.14",
+    "@mui/material": "^5.15.14",
+    "@walletconnect/web3-provider": "^1.8.0",
+    "@web3modal/wagmi": "^4.1.1",
+    "dotenv": "^16.4.5",
+    "graphql": "^16.8.1",
+    "next": "14.1.4",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.1.4"
+    "viem": "^2.9.0"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.1.4"
+    "eslint-config-next": "14.1.4",
+    "typescript": "^5"
   }
 }
