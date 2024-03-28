@@ -1,11 +1,18 @@
+'use client'
+
 import Image from "next/image";
 import styles from "./page.module.css";
+import NavBar from "@/components/NavBar";
+import { useAccount } from "wagmi";
 
 export default function Home() {
+  const { address } = useAccount()
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
+      {/* <div className={styles.description}> */}
+        <NavBar />
+        {address ?? address}
+        {/* <p>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
         </p>
@@ -89,7 +96,7 @@ export default function Home() {
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
         </a>
-      </div>
+      </div> */}
     </main>
   );
 }
