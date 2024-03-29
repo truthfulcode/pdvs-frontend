@@ -39,7 +39,6 @@ export default function NavBar() {
           sx={{ mr: 2 }}
         >
           <Image
-            style={{}}
             alt="logo"
             src="/vercel.svg"
             height="75"
