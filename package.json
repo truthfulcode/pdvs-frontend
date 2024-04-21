@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint"
   },
   "dependencies": {
     "@apollo/client": "^3.9.9",
@@ -21,15 +21,20 @@
     "@snapshot-labs/snapshot.js": "^0.11.15",
     "@tanstack/react-query": "^5.28.9",
     "@walletconnect/web3-provider": "^1.8.0",
+    "@web3modal/siwe": "^4.1.1",
     "@web3modal/wagmi": "^4.1.1",
     "dotenv": "^16.4.5",
+    "ethers": "^6.12.0",
     "express": "^4.19.2",
     "graphql": "^16.8.1",
-    "next": "^14.0.3",
+    "iron-session": "^6.3.1",
+    "next": "^14.1.0",
+    "next-auth": "^4.24.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "viem": "^2.9.3",
-    "wagmi": "^2.5.13"
+    "siwe": "^2.1.4",
+    "viem": "^2.9.6",
+    "wagmi": "^2.5.7"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -39,6 +44,7 @@
     "eslint": "^8",
     "eslint-config-next": "^13.5.6",
     "pino-pretty": "^11.0.0",
+    "tailwindcss": "^3.4.3",
     "typescript": "^5"
   }
 }

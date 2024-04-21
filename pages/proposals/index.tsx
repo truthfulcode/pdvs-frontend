@@ -1,7 +1,7 @@
-"use client";
+// "use client";
 
 import Image from "next/image";
-import styles from "../page.module.css";
+import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
 import { useAccount } from "wagmi";
 import { Box, List, ListItem, Typography } from "@mui/material";

@@ -1,18 +1,20 @@
-'use client'
-
-import Image from "next/image";
-import styles from "./page.module.css";
+// "use client";
+import styles from "../styles/page.module.css";
 import NavBar from "@/components/NavBar";
 import { useAccount } from "wagmi";
 
 export default function Home() {
-  const { address } = useAccount()
+  const { address } = useAccount();
   return (
     <main className={styles.main}>
       {/* <div className={styles.description}> */}
-        <NavBar />
-        {address ?? address}
-        {/* <p>
+      <NavBar />
+      {address ?? address}
+      {/* <div className="flex items-center justify-between w-full gap-8">
+        <w3m-network-button />
+        <w3m-button />
+      </div> */}
+      {/* <p>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>
         </p>
