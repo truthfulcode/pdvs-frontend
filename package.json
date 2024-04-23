@@ -23,6 +23,7 @@
     "@walletconnect/web3-provider": "^1.8.0",
     "@web3modal/siwe": "^4.1.1",
     "@web3modal/wagmi": "^4.1.1",
+    "autoprefixer": "^10.4.19",
     "dotenv": "^16.4.5",
     "ethers": "^6.12.0",
     "express": "^4.19.2",
@@ -30,9 +31,13 @@
     "iron-session": "^6.3.1",
     "next": "^14.1.0",
     "next-auth": "^4.24.7",
+    "postcss": "^8.4.38",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "siwe": "^2.1.4",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss": "^3.4.3",
+    "tailwindcss-animate": "^1.0.7",
     "viem": "^2.9.6",
     "wagmi": "^2.5.7"
   },
@@ -44,7 +49,6 @@
     "eslint": "^8",
     "eslint-config-next": "^13.5.6",
     "pino-pretty": "^11.0.0",
-    "tailwindcss": "^3.4.3",
     "typescript": "^5"
   }
 }
