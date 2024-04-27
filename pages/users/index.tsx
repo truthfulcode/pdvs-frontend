@@ -125,9 +125,9 @@ export default function Home() {
     },
   ];
   return (
-    <main className={styles.main}>
+    <main>
       <NavBar />
-      <Box>
+      <Box className={styles.main}>
         <DataGrid rows={rows} columns={columns} />
       </Box>
     </main>

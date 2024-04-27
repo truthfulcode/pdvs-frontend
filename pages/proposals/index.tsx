@@ -23,7 +23,7 @@ export default function Proposals() {
     });
   }, []);
   return (
-    <main className={styles.main}>
+    <main>
       <NavBar />
       <Box>{/* // */}</Box>
     </main>

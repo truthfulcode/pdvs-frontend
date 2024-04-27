@@ -44,7 +44,7 @@ export default function NavBar() {
   // }, []);
 
   const { open } = useWeb3Modal();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
   const { data, status } = useSession();
   const session = data as unknown as SIWESession;
@@ -76,55 +76,141 @@ export default function NavBar() {
   //   );
   // }
 
+  // return (
+  //   <header>
+  //     <div className="mx-auto max-w-screen-xl px-4 py-8 sm:py:12 lg:px-8">
+  //       <div className="sm:flex sm:items-center sm:justify-between">
+  //         <div className="text-center sm:text-left">
+  //           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+  //             Welcome Back, Barry!
+  //           </h1>
+
+  //           <p className="mt-1.5 text-sm text-gray-500">
+  //             Let's write a new blog post! 🎉
+  //           </p>
+  //         </div>
+
+  //         <div className="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+  //           <button
+  //             className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
+  //             type="button"
+  //           >
+  //             <span className="text-sm font-medium"> View Website </span>
+
+  //             <svg
+  //               xmlns="http://www.w3.org/2000/svg"
+  //               className="h-4 w-4"
+  //               fill="none"
+  //               viewBox="0 0 24 24"
+  //               stroke="currentColor"
+  //               strokeWidth="2"
+  //             >
+  //               <path
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+  //               />
+  //             </svg>
+  //           </button>
+
+  //           <button
+  //             className="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
+  //             type="button"
+  //           >
+  //             Create Post
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </header>
+  // );
+
+  const [uType, setUType] = React.useState("");
+
+  React.useEffect(() => {
+    //
+    let value = ""
+    if(address) {
+      value = "Admin"
+    } else {
+      value = ""
+    }
+    setUType(value)
+  }, [address]);
   return (
-    <header>
-      <div className="mx-auto max-w-screen-xl px-4 py-8 sm:py:12 lg:px-8">
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <div className="text-center sm:text-left">
-            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-              Welcome Back, Barry!
-            </h1>
-
-            <p className="mt-1.5 text-sm text-gray-500">
-              Let's write a new blog post! 🎉
-            </p>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
-            <button
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-5 py-3 text-gray-500 transition hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring"
-              type="button"
+    <div className="navbar bg-base-100">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <span className="text-sm font-medium"> View Website </span>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </button>
-
-            <button
-              className="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
-              type="button"
-            >
-              Create Post
-            </button>
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
+            </svg>
           </div>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <a>Item 1</a>
+            </li>
+            <li>
+              <a>Parent</a>
+              <ul className="p-2">
+                <li>
+                  <a>Submenu 1</a>
+                </li>
+                <li>
+                  <a>Submenu 2</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a>Item 3</a>
+            </li>
+          </ul>
         </div>
+        <a className="btn btn-ghost text-xl">PDVS</a>
       </div>
-    </header>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <a>Item 1</a>
+          </li>
+          <li>
+            <details>
+              <summary>Parent</summary>
+              <ul className="p-2">
+                <li>
+                  <a>Submenu 1</a>
+                </li>
+                <li>
+                  <a>Submenu 2</a>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <a>Item 3</a>
+          </li>
+        </ul>
+      </div>
+      <div className="navbar-end">
+        <w3m-button />
+        <p className="rounded-full ml-4">{uType}</p>
+      </div>
+    </div>
   );
-
   // return <div>{/* Connect wallet content goes here */}</div>
   return (
     <AppBar position="fixed">
