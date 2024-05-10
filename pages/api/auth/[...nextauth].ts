@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import nextAuth from "next-auth";
+import nextAuth, { AuthOptions } from "next-auth";
 import credentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
@@ -18,6 +18,11 @@ declare module "next-auth" {
  * https://next-auth.js.org/configuration/options
  */
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
+  const _authOptions = await authOptions(req, res);
+  return await nextAuth(req, res, _authOptions);
+}
+
+export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => {
   const nextAuthSecret = process.env["NEXTAUTH_SECRET"];
   if (!nextAuthSecret) {
     throw new Error("NEXTAUTH_SECRET is not set");
@@ -42,6 +47,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         },
       },
       async authorize(credentials) {
+        console.log("authorizing:");
         try {
           if (!credentials?.message) {
             throw new Error("SiweMessage is undefined");
@@ -51,6 +57,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
             `https://rpc.walletconnect.com/v1?chainId=eip155:${siwe.chainId}&projectId=${projectId}`
           );
           const nonce = await getCsrfToken({ req: { headers: req.headers } });
+          console.log("csrf nonce", nonce, req.headers);
           const result = await siwe.verify(
             {
               signature: credentials?.signature || "",
@@ -67,6 +74,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
 
           return null;
         } catch (e) {
+          console.log("caught error during auth:", e);
           return null;
         }
       },
@@ -81,12 +89,13 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     providers.pop();
   }
 
-  return await nextAuth(req, res, {
+  return {
     // https://next-auth.js.org/configuration/providers/oauth
     secret: nextAuthSecret,
     providers,
     session: {
       strategy: "jwt",
+      maxAge: 30 * 24 * 30 * 30,
     },
     callbacks: {
       session({ session, token }) {
@@ -103,5 +112,5 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
         return session;
       },
     },
-  });
-}
+  } as AuthOptions;
+};

@@ -11,7 +11,7 @@ export default function App({
   session: Session;
 }>) {
   return (
-    <Web3ModalProvider>
+    <Web3ModalProvider >
       <SessionProvider session={pageProps.session} refetchInterval={0}>
         <Component {...pageProps} />
       </SessionProvider>

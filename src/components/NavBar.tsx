@@ -18,6 +18,7 @@ import { SiweMessage } from "siwe";
 import { SignInButton } from "./SignInButton";
 import { useSession } from "next-auth/react";
 import { SIWESession } from "@web3modal/siwe";
+import Link from "next/link";
 
 export default function NavBar() {
   // const [state, setState] = React.useState<{
@@ -30,9 +31,12 @@ export default function NavBar() {
   // React.useEffect(() => {
   //   const handler = async () => {
   //     try {
-  //       const res = await fetch("/api/me");
+  //       const res = await fetch("/api/users/create", {
+  //         method: "POST",
+  //       });
   //       const json = await res.json();
-  //       setState((x) => ({ ...x, address: json.address }));
+  //       console.log("json res:", json);
+  //       // setState((x) => ({ ...x, address: json.address }));
   //     } catch (_error) {}
   //   };
   //   // 1. page loads
@@ -129,14 +133,14 @@ export default function NavBar() {
 
   React.useEffect(() => {
     //
-    let value = ""
-    if(address) {
-      value = "Admin"
+    let value = "";
+    if (address && status === "authenticated") {
+      value = "Admin";
     } else {
-      value = ""
+      value = "";
     }
-    setUType(value)
-  }, [address]);
+    setUType(value);
+  }, [address, status]);
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -162,21 +166,10 @@ export default function NavBar() {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <a>Item 1</a>
+              <Link href="/users">Users</Link>
             </li>
             <li>
-              <a>Parent</a>
-              <ul className="p-2">
-                <li>
-                  <a>Submenu 1</a>
-                </li>
-                <li>
-                  <a>Submenu 2</a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a>Item 3</a>
+              <Link href="/proposals">Proposals</Link>
             </li>
           </ul>
         </div>
@@ -185,23 +178,10 @@ export default function NavBar() {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <a>Item 1</a>
+            <Link href="/users">Users</Link>
           </li>
           <li>
-            <details>
-              <summary>Parent</summary>
-              <ul className="p-2">
-                <li>
-                  <a>Submenu 1</a>
-                </li>
-                <li>
-                  <a>Submenu 2</a>
-                </li>
-              </ul>
-            </details>
-          </li>
-          <li>
-            <a>Item 3</a>
+            <Link href="/proposals">Proposals</Link>
           </li>
         </ul>
       </div>
