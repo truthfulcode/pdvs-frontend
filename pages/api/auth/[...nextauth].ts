@@ -95,7 +95,7 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
     providers,
     session: {
       strategy: "jwt",
-      maxAge: 30 * 24 * 30 * 30,
+      maxAge: 60 * 60,
     },
     callbacks: {
       session({ session, token }) {

@@ -22,14 +22,13 @@ const styling = {
 export const getServerSideProps = async () => {
   // Fetch data from external API
   const listings = await getListings(1);
-  const session = await getSession();
   // Pass data to the page via props
-  return { props: { listings, session } };
+  return { props: { listings } };
 };
 
-export default function Home({ listings, session }) {
+export default function Home({ listings }) {
   const { address } = useAccount();
-  // const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
   console.log("session", session)
   const [deleteId, setDeleteId] = useState(0);
 
