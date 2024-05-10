@@ -20,6 +20,7 @@ export const siweConfig = createSIWEConfig({
     }).prepareMessage(),
   getNonce: async () => {
     const nonce = await getCsrfToken();
+    console.log("csrf nonce within", nonce)
     if (!nonce) {
       throw new Error("Failed to get nonce!");
     }

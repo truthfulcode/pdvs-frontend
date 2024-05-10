@@ -1,10 +1,9 @@
-// export type Proposal = {
-//   id: string
-//   title: string
-//   body: string
-//   choices: string[]
-//   start: number
-//   end: number
-//   snapshot: string
-//   state: string
-// };
+import { UserType } from "@prisma/client";
+
+export type User = {
+  userType: UserType;
+  userAddress: string;
+  matricNumber: string;
+  cgpa: number;
+  fullName: string;
+};
