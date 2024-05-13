@@ -18,7 +18,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  const ADMIN = "0x17fBA9Eb71F040d57d19B48A28002FfE32380DF8";
+  const ADMIN = ADDRESSES.admin;
   const { method, body } = req;
   const { userId } = body;
 

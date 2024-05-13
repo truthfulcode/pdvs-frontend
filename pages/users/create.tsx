@@ -25,6 +25,7 @@ import { useSession } from "next-auth/react";
 import { User } from "@/utils/types";
 import { UserType } from "@prisma/client";
 import { performPOST } from "@/utils/httpRequest";
+import RestrictedPage from "@/components/RestrictedPage";
 
 const styling = {
   row: { display: "flex", flexDirection: "row" },
@@ -54,7 +55,7 @@ type VarKeys = {
 export default function Home() {
   const { address } = useAccount();
   const { data: sessionData, status, update } = useSession();
-console.log("status", status)
+  console.log("status", status);
   const [data, setData] = useState<VarKeys>({
     address: defaultValue,
     matricNumber: defaultValue,
@@ -68,13 +69,13 @@ console.log("status", status)
 
   const [val, setVal] = useState("");
 
-  const handleRegistration = (e) => {
+  const handleRegistration = (e: any) => {
     e.preventDefault();
 
     console.log(data);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     let validation = false;
     let errorMsg: string | undefined = undefined;
@@ -136,10 +137,10 @@ console.log("status", status)
     await performPOST(
       "/api/users/create",
       JSON.stringify(userObj),
-      (res) => {
+      (res: any) => {
         console.log("create user res:", res);
       },
-      (err) => {
+      (err: any) => {
         console.log("create user err:", err);
       }
     );
@@ -148,7 +149,7 @@ console.log("status", status)
     <main>
       <NavBar />
       <Box className={styles.main}>
-        {status === "authenticated" ? (
+        <RestrictedPage validAccess={status === "authenticated"}>
           <>
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
               Create New User{" "}
@@ -251,7 +252,7 @@ console.log("status", status)
                 </label>
                 <div className="flex">
                   {userTypes.map((o, i) => (
-                    <div className="inline-flex items-center">
+                    <div key={i} className="inline-flex items-center">
                       <label
                         className="relative flex items-center p-3 rounded-full cursor-pointer"
                         htmlFor="html"
@@ -301,9 +302,7 @@ console.log("status", status)
               </button>
             </form>
           </>
-        ) : (
-          <>Admin restricted page</>
-        )}
+        </RestrictedPage>
       </Box>
     </main>
   );
