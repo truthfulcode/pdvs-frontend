@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
 import createUser from "../../../prisma/operations/users/create";
 import { account, client, walletClient } from "@/utils/utils";
 import { ADDRESSES } from "@/utils/constants";
-import erc20Abi from "../../../src/abi/ERC20.json";
 import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
@@ -15,7 +13,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  const ADMIN = "0x17fBA9Eb71F040d57d19B48A28002FfE32380DF8";
+  const ADMIN = ADDRESSES.admin;
   const { method, body } = req;
   console.log("body", body);
   const { userType, userAddress, matricNumber, cgpa, fullName } = body;

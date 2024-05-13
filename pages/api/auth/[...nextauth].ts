@@ -5,6 +5,8 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { ethers } from "ethers";
 import type { SIWESession } from "@web3modal/siwe";
+import { getUserByAddress } from "../../../prisma/operations/users/read";
+import { ADDRESSES } from "@/utils/constants";
 
 declare module "next-auth" {
   interface Session extends SIWESession {
@@ -66,10 +68,11 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
             { provider }
           );
 
+          
           if (result.success) {
             return {
               id: `eip155:${siwe.chainId}:${siwe.address}`,
-            };
+            }
           }
 
           return null;
@@ -95,7 +98,7 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
     providers,
     session: {
       strategy: "jwt",
-      maxAge: 60 * 60,
+      maxAge: 30 * 24 * 60 * 60,
     },
     callbacks: {
       session({ session, token }) {

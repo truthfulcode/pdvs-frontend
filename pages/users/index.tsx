@@ -13,6 +13,9 @@ import Link from "next/link";
 import { performPOST } from "@/utils/httpRequest";
 import { getListings } from "../../prisma/operations/users/read";
 import { useState } from "react";
+import { authOptions } from "../api/auth/[...nextauth]";
+import { getServerSession } from "next-auth";
+import RestrictedPage from "@/components/RestrictedPage";
 
 const styling = {
   row: { display: "flex", flexDirection: "row" },
@@ -26,10 +29,10 @@ export const getServerSideProps = async () => {
   return { props: { listings } };
 };
 
-export default function Home({ listings }) {
+export default function Home({ listings }: { listings: any }) {
   const { address } = useAccount();
   const { data: session, status } = useSession();
-  console.log("session", session)
+  console.log("session", session);
   const [deleteId, setDeleteId] = useState(0);
 
   const Modal = () => {
@@ -65,10 +68,10 @@ export default function Home({ listings }) {
     await performPOST(
       "/api/users/delete",
       JSON.stringify({ userId }),
-      (res) => {
+      (res: any) => {
         console.log("remove user res:", res);
       },
-      (err) => {
+      (err: any) => {
         console.log("remove user err:", err);
       }
     );
@@ -114,7 +117,11 @@ export default function Home({ listings }) {
             // removes user
             // TODO add userId
             setDeleteId(Number(id));
-            document.getElementById("my_modal_1")!.showModal();
+            (
+              (document.getElementById("my_modal_1") as HTMLInputElement) && {
+                showModal: () => {},
+              }
+            ).showModal();
             // await submit("1");
           }}
           label="Delete"
@@ -193,15 +200,11 @@ export default function Home({ listings }) {
     <main>
       <NavBar />
       <Box className={styles.main}>
-        {session ? (
-          <>
-            <Button href="/users/add">New User</Button>
-            <Modal />
-            <DataGrid rows={listings} columns={columns} />
-          </>
-        ) : (
-          <>Admin restricted page</>
-        )}
+        <RestrictedPage validAccess={!!session}>
+          <Button href="/users/create">New User</Button>
+          <Modal />
+          <DataGrid rows={listings} columns={columns} />
+        </RestrictedPage>
       </Box>
     </main>
   );

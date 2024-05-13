@@ -19,6 +19,8 @@ import { SignInButton } from "./SignInButton";
 import { useSession } from "next-auth/react";
 import { SIWESession } from "@web3modal/siwe";
 import Link from "next/link";
+import { ADDRESSES } from "@/utils/constants";
+import { getUserByAddress } from "../../prisma/operations/users/read";
 
 export default function NavBar() {
   // const [state, setState] = React.useState<{
@@ -131,11 +133,24 @@ export default function NavBar() {
 
   const [uType, setUType] = React.useState("");
 
+  console.log("userType value", uType)
   React.useEffect(() => {
     //
     let value = "";
-    if (address && status === "authenticated") {
-      value = "Admin";
+    if (status === "authenticated") {
+      if(address === ADDRESSES.admin) {
+        value = "Admin";
+      } else {
+        const fetch = async () => {
+          let res;
+        try {
+          res = await getUserByAddress(address as string);
+        } catch (e) {}
+        if(res) value = res.userType;
+        }
+
+        fetch()
+      }
     } else {
       value = "";
     }
