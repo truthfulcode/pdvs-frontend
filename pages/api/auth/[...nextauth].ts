@@ -59,7 +59,7 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
             `https://rpc.walletconnect.com/v1?chainId=eip155:${siwe.chainId}&projectId=${projectId}`
           );
           const nonce = await getCsrfToken({ req: { headers: req.headers } });
-          console.log("csrf nonce", nonce, req.headers);
+          console.log("authorize csrf nonce", nonce);
           const result = await siwe.verify(
             {
               signature: credentials?.signature || "",

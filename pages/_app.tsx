@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import Web3ModalProvider from "@/context";
+import { WagmiProvider } from "wagmi";
 
 export default function App({
   Component,
@@ -11,10 +12,10 @@ export default function App({
   session: Session;
 }>) {
   return (
-    <Web3ModalProvider >
-      <SessionProvider session={pageProps.session} refetchInterval={0}>
-        <Component {...pageProps} />
-      </SessionProvider>
-    </Web3ModalProvider>
+      <Web3ModalProvider>
+        <SessionProvider session={pageProps.session} refetchInterval={0}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </Web3ModalProvider>
   );
 }
