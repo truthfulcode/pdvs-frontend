@@ -22,9 +22,8 @@ export const config = defaultWagmiConfig({
   projectId,
   metadata,
   ssr: true,
-  enableEmail: true,
+  // enableEmail: true, // results in some errors in the console
   storage: createStorage({
     storage: cookieStorage,
   }),
-  // ...wagmiOptions, // Optional - Override createConfig parameters
 });
