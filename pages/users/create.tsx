@@ -24,7 +24,7 @@ import { isAddress } from "viem";
 import { useSession } from "next-auth/react";
 import { User } from "@/utils/types";
 import { UserType } from "@prisma/client";
-import { performPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
 
 const styling = {
@@ -134,15 +134,10 @@ export default function Home() {
       matricNumber: data.matricNumber.value,
     };
 
-    await performPOST(
+    await performBriefPOST(
       "/api/users/create",
       JSON.stringify(userObj),
-      (res: any) => {
-        console.log("create user res:", res);
-      },
-      (err: any) => {
-        console.log("create user err:", err);
-      }
+      "create user"
     );
   }
   return (

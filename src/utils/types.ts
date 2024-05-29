@@ -7,3 +7,8 @@ export type User = {
   cgpa: number;
   fullName: string;
 };
+
+export type Proposal = {
+  title: string;
+  content: string;
+}; 

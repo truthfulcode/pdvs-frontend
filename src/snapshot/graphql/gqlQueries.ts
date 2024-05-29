@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { spaceName } from "../config";
 
 export const GQLs = {
   PROPOSALS: gql`
@@ -6,7 +7,7 @@ export const GQLs = {
       proposals(
         first: 20
         skip: 0
-        where: { space_in: ["yam.eth"], state: "closed" }
+        where: { space_in: ["${spaceName}"], state: "closed" }
         orderBy: "created"
         orderDirection: desc
       ) {

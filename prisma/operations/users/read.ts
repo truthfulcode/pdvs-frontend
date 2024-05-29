@@ -2,7 +2,7 @@ import { User } from "@/utils/types";
 import { prisma } from "../../../src/utils/prisma";
 
 // ------
-export async function getUserById(id: number): Promise<User | null> {
+export async function getUserById(id: string) {
   let result = await prisma.user.findFirst({
     where: {
       id,
@@ -14,10 +14,22 @@ export async function getUserById(id: number): Promise<User | null> {
   return result ?? null;
 }
 
-export async function getUserByAddress(userAddress: string): Promise<User | null> {
+export async function isUserAdmin(addr: string) {
+  //
+  const res = await prisma.user.findFirst({
+    where: {
+      userType: "ADMIN",
+      userAddress: addr,
+    },
+  });
+
+  return !!res;
+}
+
+export async function getUserByAddress(userAddress: string) {
   let result = await prisma.user.findFirst({
     where: {
-      userAddress
+      userAddress,
     },
     // select: {
 
@@ -26,7 +38,7 @@ export async function getUserByAddress(userAddress: string): Promise<User | null
   return result ?? null;
 }
 
-export async function getListings(page: number): Promise<User[] | null> {
+export async function getListings(page: number) {
   if (page < 1) throw Error("Invalid page!");
   let result = await prisma.user.findMany({
     take: 4,

@@ -25,6 +25,24 @@ export const performPOST = async (
     onError(err);
   }
 };
+
+export const performBriefPOST = async (
+  url: string,
+  body: BodyInit,
+  name: string
+) => {
+  await performPOST(
+    url,
+    body,
+    (res: any) => {
+      console.log(name + " res:", res);
+    },
+    (err: any) => {
+      console.log(name + " err:", err);
+    }
+  );
+};
+
 export const performPUT = async (
   url: string,
   body: BodyInit,
