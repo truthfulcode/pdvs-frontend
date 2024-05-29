@@ -10,7 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
-import { performPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import { getListings } from "../../prisma/operations/users/read";
 import { useState } from "react";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -24,7 +24,14 @@ const styling = {
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
-  const listings = await getListings(1);
+  let listings = await getListings(1);
+
+  if (listings) {
+    listings = listings.map((l) => {
+      return { ...l, cgpa: l.cgpa / 100 };
+    });
+  }
+
   // Pass data to the page via props
   return { props: { listings } };
 };
@@ -33,8 +40,9 @@ export default function Home({ listings }: { listings: any }) {
   const { address } = useAccount();
   const { data: session, status } = useSession();
   console.log("session", session);
-  const [deleteId, setDeleteId] = useState(0);
+  const [deleteId, setDeleteId] = useState("");
 
+  // TODO revoke authentication access upon user removal
   const Modal = () => {
     return (
       <>
@@ -64,16 +72,11 @@ export default function Home({ listings }: { listings: any }) {
   };
 
   console.log("listings", listings);
-  async function submit(userId: number) {
-    await performPOST(
+  async function submit(userId: string) {
+    await performBriefPOST(
       "/api/users/delete",
       JSON.stringify({ userId }),
-      (res: any) => {
-        console.log("remove user res:", res);
-      },
-      (err: any) => {
-        console.log("remove user err:", err);
-      }
+      "remove user"
     );
   }
 
@@ -116,11 +119,10 @@ export default function Home({ listings }: { listings: any }) {
           onClick={async () => {
             // removes user
             // TODO add userId
-            setDeleteId(Number(id));
+            console.log("to be deleted id", id);
+            setDeleteId(id as string);
             (
-              (document.getElementById("my_modal_1") as HTMLInputElement) && {
-                showModal: () => {},
-              }
+              document.getElementById("my_modal_1") as HTMLInputElement
             ).showModal();
             // await submit("1");
           }}
@@ -201,9 +203,15 @@ export default function Home({ listings }: { listings: any }) {
       <NavBar />
       <Box className={styles.main}>
         <RestrictedPage validAccess={!!session}>
-          <Button href="/users/create">New User</Button>
+          <Button href="/users/create">Create User</Button>
           <Modal />
-          <DataGrid rows={listings} columns={columns} />
+          {listings.length === 0 ? (
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
+              No Users Found{" "}
+            </h1>
+          ) : (
+            <DataGrid rows={listings} columns={columns} />
+          )}
         </RestrictedPage>
       </Box>
     </main>

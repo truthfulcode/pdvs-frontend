@@ -20,7 +20,8 @@ import { getSession, useSession } from "next-auth/react";
 import { SIWESession } from "@web3modal/siwe";
 import Link from "next/link";
 import { ADDRESSES } from "@/utils/constants";
-import { getUserByAddress } from "../../prisma/operations/users/read";
+import { VotingToken } from "@/VotingToken";
+import { Address } from "viem";
 
 export default function NavBar() {
   // const [state, setState] = React.useState<{
@@ -63,13 +64,20 @@ export default function NavBar() {
     if (status === "authenticated") {
       if (address === ADDRESSES.admin) {
         value = "Admin";
+        setUType(value);
       } else {
         const fetch = async () => {
           let res;
           try {
-            res = await getUserByAddress(address as string);
-          } catch (e) {}
-          if (res) value = res.userType;
+            const vt = new VotingToken(undefined);
+            const res = await vt.getUserType(address as Address);
+            console.log("address n record", address, res);
+            if (res) value = res === 1 ? "STUDENT" : res === 2 ? "CM" : "NONE";
+            setUType(value);
+            console.log("value", value)
+          } catch (e) {
+            console.log("failed", e);
+          }
         };
 
         fetch();
@@ -77,7 +85,6 @@ export default function NavBar() {
     } else {
       value = "";
     }
-    setUType(value);
   }, [address, status]);
   return (
     <div className="navbar bg-base-100">

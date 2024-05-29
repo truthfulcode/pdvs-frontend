@@ -6,7 +6,10 @@ import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { AdminVotingToken } from "@/AdminVotingToken";
-import { isUserAdmin } from "../../../prisma/operations/users/read";
+import { createProposal } from "../../../prisma/operations/proposals/create";
+import { processLike } from "../../../prisma/operations/proposals/put";
+import { getUserByAddress } from "../../../prisma/operations/users/read";
+import { getProposalById } from "../../../prisma/operations/proposals/read";
 type ResponseData = {
   message: string;
 };
@@ -15,61 +18,37 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  const vt = new AdminVotingToken();
-
   const { method, body } = req;
-  console.log("body", body);
-  const { userType, userAddress, matricNumber, cgpa, fullName } = body;
+  const { proposalId } = body;
 
   async function session() {
     try {
-      console.log("add call it");
-      // console.log("req",req)
-      // const session = await getSession({req})
       const session = await getServerSession(
         req,
         res,
         await authOptions(req, res)
       );
-      //   {
-      //   req: req,
-      // });
-
-      console.log("START");
-
-      console.log("session:", session);
 
       if (session) {
-        const _isUserAdmin = await isUserAdmin(session.address);
+        const address = session.address;
+        if (session.address) {
+          // validate session address
+          const userResult = await getUserByAddress(address);
 
-        if (_isUserAdmin) {
-          console.log("START_ADMIN");
-          // braodcast the transaction to the blockchain
+          if (!userResult)
+            return res.status(401).json({ message: "Invalid User!" });
 
-          const castedCgpa = Number((cgpa * 100).toFixed(0));
+          // validate input
+          const proposalResult = await getProposalById(proposalId);
 
-          const simulation = await vt.simulate("mint", [
-            userAddress,
-            castedCgpa,
-            userType === "CM" ? 2 : 1,
-          ]);
+          if (!proposalResult)
+            return res.status(401).json({ message: "Invalid Proposal!" });
 
-          // TODO register the user
-          const result = await createUser({
-            userType,
-            userAddress,
-            matricNumber,
-            cgpa: castedCgpa,
-            fullName,
-          });
-
-          console.log("create user", result);
-
-          await vt.execute(simulation.request);
+          await processLike(userResult.id, proposalId);
 
           return res.status(200).json({ message: "success!" });
         } else {
-          return res.status(401).json({ message: "Unauthorized Access!" });
+          return res.status(401).json({ message: "Invalid Address!" });
         }
       } else {
         return res.status(401).json({ message: "Invalid Session!" });

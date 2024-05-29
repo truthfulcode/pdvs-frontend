@@ -5,7 +5,10 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { ethers } from "ethers";
 import type { SIWESession } from "@web3modal/siwe";
-import { getUserByAddress } from "../../../prisma/operations/users/read";
+import {
+  getUserByAddress,
+  isUserAdmin,
+} from "../../../prisma/operations/users/read";
 import { ADDRESSES } from "@/utils/constants";
 
 declare module "next-auth" {
@@ -24,7 +27,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   return await nextAuth(req, res, _authOptions);
 }
 
-export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => {
+export const authOptions = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const nextAuthSecret = process.env["NEXTAUTH_SECRET"];
   if (!nextAuthSecret) {
     throw new Error("NEXTAUTH_SECRET is not set");
@@ -55,6 +61,19 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
             throw new Error("SiweMessage is undefined");
           }
           const siwe = new SiweMessage(credentials.message);
+
+          const addr = siwe.address;
+          const _isUserAdmin = await isUserAdmin(addr);
+
+          if (!_isUserAdmin) {
+            // TODO query record from blockchain
+            const userRecord = await getUserByAddress(addr);
+            console.log("record", userRecord);
+            if (!userRecord) {
+              return null;
+            }
+          }
+
           const provider = new ethers.JsonRpcProvider(
             `https://rpc.walletconnect.com/v1?chainId=eip155:${siwe.chainId}&projectId=${projectId}`
           );
@@ -68,11 +87,10 @@ export const authOptions = async (req: NextApiRequest, res: NextApiResponse) => 
             { provider }
           );
 
-          
           if (result.success) {
             return {
               id: `eip155:${siwe.chainId}:${siwe.address}`,
-            }
+            };
           }
 
           return null;

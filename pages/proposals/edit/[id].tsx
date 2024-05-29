@@ -1,35 +1,55 @@
-"use client";
+// "use client";
 
-import Image from "next/image";
-import styles from "../../styles/page.module.css";
+import styles from "../../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
-import { useAccount } from "wagmi";
 import {
   Box,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
+  Divider,
+  IconButton,
+  InputAdornment,
   List,
   ListItem,
-  Radio,
-  RadioGroup,
   TextField,
+  TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useEffect, useState } from "react";
-import { isAddress } from "viem";
-import { useSession } from "next-auth/react";
-import { Proposal, User } from "@/utils/types";
-import { UserType } from "@prisma/client";
+import { SnapshotGraphQL } from "@/snapshot/graphql/SnapshotGraphQL";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SendIcon from "@mui/icons-material/Send";
+import { useRouter } from "next/router";
+import { Proposal } from "@prisma/client";
 import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { getProposalLiked } from "../../../prisma/operations/proposals/put";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../api/auth/[...nextauth]";
+import { getUserByAddress } from "../../../prisma/operations/users/read";
+import { getProposalById } from "../../../prisma/operations/proposals/read";
 import RestrictedPage from "@/components/RestrictedPage";
+import { useSession } from "next-auth/react";
 
-const styling = {
-  row: { display: "flex", flexDirection: "row" },
-  column: { display: "flex", flexDirection: "column" },
+export const getServerSideProps = async ({ params, req, res }) => {
+  const { id } = params;
+
+  // Fetch data from external API
+  let proposal = await getProposalById(id as string);
+
+  const session = await getServerSession(req, res, await authOptions(req, res));
+  console.log("print all", id, session?.address);
+  let isLiked = false;
+
+  if (session?.address) {
+    const user = await getUserByAddress(session.address);
+    if (user) {
+      let result = await getProposalLiked(user.id, id);
+      isLiked = !!result;
+    }
+  }
+
+  // Pass data to the page via props
+  return { props: { _proposal: JSON.stringify(proposal), isLiked } };
 };
 
 type VariableState = {
@@ -37,30 +57,33 @@ type VariableState = {
   errorMsg?: string;
 };
 
-const defaultValue = {
-  value: "",
-  errorMsg: undefined,
-} as VariableState;
-
 type VarKeys = {
   title: VariableState;
   content: VariableState;
 };
 
-export default function Home() {
-  const { address } = useAccount();
-  const { data: sessionData, status, update } = useSession();
-  console.log("status", status);
+export default function Proposals({
+  _proposal,
+  isLiked,
+}: {
+  _proposal: any;
+  isLiked: boolean;
+}) {
+  const { data: sessionData, status } = useSession();
+  const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
+  const [title, setTitle] = useState(proposal.title);
+  const [content, setContent] = useState(proposal.content);
+  const comments = ["TITLE 1", "TITLE 2", "TITLE 3"];
   const [data, setData] = useState<VarKeys>({
-    title: defaultValue,
-    content: defaultValue,
+    title: {
+      value: proposal.title,
+      errorMsg: undefined,
+    } as VariableState,
+    content: {
+      value: proposal.content,
+      errorMsg: undefined,
+    } as VariableState,
   });
-
-  const handleRegistration = (e: any) => {
-    e.preventDefault();
-
-    console.log(data);
-  };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -93,24 +116,31 @@ export default function Home() {
     console.log("print", data, name, value);
   };
 
-  // Destructure data
-  const { ...allData } = data;
-
-  // Disable submit button until all fields are filled in
-  const canSubmit = [...Object.values(allData)].every((v) => !v.errorMsg);
+  const router = useRouter();
 
   async function submit() {
-    const obj: Proposal = {
-      content: data.content.value,
+    const obj = {
+      proposalId: proposal.id,
       title: data.title.value,
+      content: data.content.value,
     };
 
-    await performBriefPOST(
-      "/api/proposals/create",
+    await performPOST(
+      "/api/proposals/edit",
       JSON.stringify(obj),
-      "create proposal"
+      (res: any) => {
+        console.log("edit proposal res:", res);
+        router.push("/proposals/")
+      },
+      (err: any) => {
+        console.log("edit proposal err:", err);
+      }
     );
   }
+  // const NoProposal = () => {
+  //   return <Typography>No Proposal Found</Typography>;
+  // };
+
   return (
     <main>
       <NavBar />
@@ -118,9 +148,15 @@ export default function Home() {
         <RestrictedPage validAccess={status === "authenticated"}>
           <>
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
-              Create New Proposal{" "}
+              Edit Proposal{" "}
             </h1>
-            <form className="w-1/2" method="POST" onSubmit={handleRegistration}>
+            <form
+              className="w-1/2"
+              method="POST"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Title
@@ -153,12 +189,12 @@ export default function Home() {
               </div>
               <div className="flex justify-center">
                 <button
-                  disabled={!canSubmit}
+                  // disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
                   className="btn btn-wide"
                 >
-                  CREATE
+                  UPDATE
                 </button>
               </div>
             </form>

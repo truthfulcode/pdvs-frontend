@@ -6,7 +6,7 @@ export default async function createUser(obj: User) {
   const { userType, userAddress, matricNumber, cgpa, fullName } = obj;
   if (!["STUDENT", "CM"].includes(userType)) throw Error("invalid user type!");
   if (!isAddress(userAddress)) throw Error("Invalid Address!");
-  if (cgpa < 0 || cgpa > 4) throw Error("CGPA out of range!");
+  if (cgpa < 0 || cgpa > 400) throw Error("CGPA out of range!");
 
   return await prisma.user.create({
     data: {
