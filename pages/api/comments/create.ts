@@ -45,7 +45,7 @@ export default function handler(
 
           console.log("comment result", result);
 
-          return res.status(200).json({ message: "success!" });
+          return res.status(200).json({ message: "success" });
         } else {
           return res.status(401).json({ message: "Unauthorized Access!" });
         }

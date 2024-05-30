@@ -78,11 +78,14 @@ export const performGET = async (
   onError: Function
 ) => {
   try {
-    const response = await fetch(url + "?" + new URLSearchParams(body));
+    const response = await fetch(url + "?" + new URLSearchParams(body), {
+      method: "GET",  
+    });
     const isSuccess = response.ok && response.status == 200;
     if (isSuccess) {
       console.log("SUCCESS");
-      onSuccess(response);
+      const message = await response.json();
+      onSuccess(message);
     } else {
       const message = await response.json();
       console.log("ERROR");
