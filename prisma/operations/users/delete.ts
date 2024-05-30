@@ -1,5 +1,5 @@
 import { prisma } from "../../../src/utils/prisma";
-export default async function deleteUser(userId: number) {
+export default async function deleteUser(userId: string) {
   // only delete listing if it's in a draft status
   let result = await prisma.user.findUnique({
     where: {
