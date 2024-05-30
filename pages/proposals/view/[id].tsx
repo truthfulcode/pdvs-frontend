@@ -15,13 +15,20 @@ import {
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useEffect, useState } from "react";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { SnapshotGraphQL } from "@/snapshot/graphql/SnapshotGraphQL";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import { useRouter } from "next/router";
 import { Comment, Proposal } from "@prisma/client";
-import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performGET, performPOST } from "@/utils/httpRequest";
 import { getProposalLiked } from "../../../prisma/operations/proposals/put";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -32,28 +39,19 @@ import {
 import { getProposalById } from "../../../prisma/operations/proposals/read";
 import { getProposalComments } from "../../../prisma/operations/comments/read";
 import { formatTime } from "@/utils/utils";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
 
-type CustomComment = Comment & { username: string };
+type CustomComment = Comment & {
+  username: string;
+  userType: string;
+  isEditable: boolean;
+};
 
 export const getServerSideProps = async ({ params, req, res }) => {
   const { id } = params;
 
   // Fetch data from external API
   let proposal = await getProposalById(id as string);
-
-  let comments: Comment[] = [];
-  if (proposal) {
-    comments = await getProposalComments(id);
-  }
-
-  let comments1: CustomComment[] = [];
-
-  comments.map(async (c) => {
-    let c1: CustomComment = c as CustomComment;
-    const u = await getUserById(c.authorId);
-    c1.username = u ? u.fullName : "";
-    comments1.push(c1);
-  });
 
   const session = await getServerSession(req, res, await authOptions(req, res));
   let isLiked = false;
@@ -68,14 +66,11 @@ export const getServerSideProps = async ({ params, req, res }) => {
     }
   }
 
-  console.log("comments", comments1);
-
   // Pass data to the page via props
   return {
     props: {
       _proposal: JSON.stringify(proposal),
       isLiked,
-      _comments: JSON.stringify(comments1),
       isAdmin,
     },
   };
@@ -84,20 +79,43 @@ export const getServerSideProps = async ({ params, req, res }) => {
 export default function Proposals({
   _proposal,
   isLiked,
-  _comments,
   isAdmin,
 }: {
   _proposal: any;
-  _comments: any;
   isLiked: boolean;
   isAdmin: boolean;
 }) {
   const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
-  const comments = JSON.parse(_comments) as CustomComment[];
-  // const comments = ["TITLE 1", "TITLE 2", "TITLE 3"];
-  const BODY =
-    "## 0xE has maliciously denied other team members admin access to Yam's core infrastructure. Multiple services have been lost and discontinued due to 0xE gate keeping of access to these services. 1. Yam's Forum which was the primary discussion point for all Yam improvement proposals. The information that was stored on the forums, many contributors spend months creating are now lost. 2. Yam's Gsuite which includes all contributor email and correspondence. There is possibility that any service that requires a payment will also be discontinued, ie. website hosting and domain name. Snapshot has been approved since Jan 29th 2023 to \"0xE needs to give access to all yam.finance infrastructure to active yam team members that have history of supporting yam.\" https://snapshot.org/#/yam.eth/proposal/0x7e4a82c045f51625d9d707b09214b77f95ad4697ba06aa5ed9737e662afe5eeb Multiple requests have been made and ignored over the past 3 months. ### At this point, it is clear that 0xE has no intentions of allowing other core team members access to the infrastructure to repair the damage that he has done. ## This snapshot is to remove 0xE from the Guardian Multisig and Operations Multisig and any other Yam related infrastructure that we are able to (no others at the moment)";
-  console.log("comments", _comments);
+  const [comments, setComments] = useState<CustomComment[]>([]);
+
+  async function queryComments() {
+    const obj = new URLSearchParams({
+      proposalId: proposal.id,
+    });
+
+    await performGET(
+      "/api/comments/read",
+      obj,
+      (res: any) => {
+        console.log("read proposal res", res);
+        let result = res.data.comments;
+        if (result) setComments(res.data.comments);
+        console.log("comments data", res.data.comments);
+      },
+      (err: any) => {
+        console.log("read proposal err", err);
+      }
+    );
+  }
+  useEffect(() => {
+    queryComments();
+  }, []);
+  const isEditable = (createdAt: Date) => {
+    let expirationAtTime = new Date(createdAt).getTime() + 10 * 60 * 1000;
+    let now = new Date().getTime();
+    console.log("time", createdAt, now);
+    return now <= expirationAtTime;
+  };
   const ProposalDetails = () => {
     const [liked, setLiked] = useState(isLiked);
 
@@ -155,6 +173,29 @@ export default function Proposals({
         }
       );
     };
+
+    const [commentIdEditing, setCommentIdEditing] = useState("");
+    const [commentContentEditing, setCommentContentEditing] = useState("");
+
+    const saveSubmit = async (commentId: string) => {
+      const obj = {
+        commentId: commentIdEditing,
+        content: commentContentEditing,
+      };
+
+      await performPOST(
+        "/api/comments/edit",
+        JSON.stringify(obj),
+        (res: any) => {
+          console.log("edit comment res:", res);
+          location.reload();
+        },
+        (err: any) => {
+          console.log("edit comment err:", err);
+        }
+      );
+    };
+
     return (
       <>
         <Box sx={{ border: "black solid 3px", borderRadius: 3, p: 2, mb: 2 }}>
@@ -201,7 +242,8 @@ export default function Proposals({
               ),
             }}
             sx={{
-              width: 640,
+              mt: 2,
+              width: "640px",
               mb: 2,
             }}
             multiline
@@ -236,13 +278,66 @@ export default function Proposals({
                     }}
                   >
                     <Typography variant="h6">{c.username}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      ml={1}
+                      sx={{
+                        background: () => {
+                          switch (c.userType) {
+                            case "STUDENT":
+                              return "blue";
+                            case "CM":
+                              return "yellow";
+                            default:
+                              return "red";
+                          }
+                        },
+                        borderRadius: 3,
+                        p: "2px 4px",
+                      }}
+                    >
+                      {c.userType}
+                    </Typography>
                   </Box>
-                  <Typography
-                    sx={{ display: "inline-flex", p: 1 }}
-                    variant="body2"
-                  >
-                    {c.content}
-                  </Typography>
+                  {c.id !== commentIdEditing ? (
+                    <Typography
+                      sx={{ display: "inline-flex", p: 1 }}
+                      variant="body2"
+                    >
+                      {c.content}
+                    </Typography>
+                  ) : (
+                    <TextField
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => {
+                                saveSubmit(c.id);
+                                setCommentIdEditing("");
+                                setCommentContentEditing("");
+                              }}
+                            >
+                              <SaveAsIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        mt: 2,
+                        width: "auto",
+                        mb: 2,
+                      }}
+                      multiline
+                      id="outlined-basic"
+                      label="Comment"
+                      variant="outlined"
+                      value={commentContentEditing}
+                      onChange={(e) => {
+                        setCommentContentEditing(e.target.value);
+                      }}
+                    />
+                  )}
                   <Typography
                     sx={{ position: "absolute", bottom: 0, right: 0, p: 2 }}
                     variant="body2"
@@ -250,9 +345,19 @@ export default function Proposals({
                     {formatTime(new Date(c.createdAt))}
                   </Typography>
 
-                  {isAdmin && (
-                    <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
-                      {/* Actions */}
+                  <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
+                    {/* Actions */}
+                    {c.isEditable && isEditable(c.createdAt) && (
+                      <IconButton
+                        onClick={() => {
+                          setCommentIdEditing(c.id);
+                          setCommentContentEditing(c.content);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {isAdmin && (
                       <IconButton
                         disableRipple
                         onClick={async () => {
@@ -272,8 +377,8 @@ export default function Proposals({
                       >
                         <DeleteIcon />
                       </IconButton>
-                    </Box>
-                  )}
+                    )}
+                  </Box>
                 </Box>
               </ListItem>
             ))}
