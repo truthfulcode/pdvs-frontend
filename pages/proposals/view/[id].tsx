@@ -21,14 +21,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import { useRouter } from "next/router";
 import { Comment, Proposal } from "@prisma/client";
-import { performBriefPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import { getProposalLiked } from "../../../prisma/operations/proposals/put";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
-import { getUserByAddress } from "../../../prisma/operations/users/read";
+import {
+  getUserByAddress,
+  getUserById,
+} from "../../../prisma/operations/users/read";
 import { getProposalById } from "../../../prisma/operations/proposals/read";
 import { getProposalComments } from "../../../prisma/operations/comments/read";
 import { formatTime } from "@/utils/utils";
+
+type CustomComment = Comment & { username: string };
 
 export const getServerSideProps = async ({ params, req, res }) => {
   const { id } = params;
@@ -36,29 +41,42 @@ export const getServerSideProps = async ({ params, req, res }) => {
   // Fetch data from external API
   let proposal = await getProposalById(id as string);
 
-  let comments: Comment[] | null = [];
+  let comments: Comment[] = [];
   if (proposal) {
     comments = await getProposalComments(id);
   }
 
+  let comments1: CustomComment[] = [];
+
+  comments.map(async (c) => {
+    let c1: CustomComment = c as CustomComment;
+    const u = await getUserById(c.authorId);
+    c1.username = u ? u.fullName : "";
+    comments1.push(c1);
+  });
+
   const session = await getServerSession(req, res, await authOptions(req, res));
-  console.log("print all", id, session?.address);
   let isLiked = false;
 
+  let isAdmin = false;
   if (session?.address) {
     const user = await getUserByAddress(session.address);
+    isAdmin = user?.userType === "ADMIN";
     if (user) {
       let result = await getProposalLiked(user.id, id);
       isLiked = !!result;
     }
   }
 
+  console.log("comments", comments1);
+
   // Pass data to the page via props
   return {
     props: {
       _proposal: JSON.stringify(proposal),
       isLiked,
-      _comments: JSON.stringify(comments),
+      _comments: JSON.stringify(comments1),
+      isAdmin,
     },
   };
 };
@@ -67,13 +85,15 @@ export default function Proposals({
   _proposal,
   isLiked,
   _comments,
+  isAdmin,
 }: {
   _proposal: any;
   _comments: any;
   isLiked: boolean;
+  isAdmin: boolean;
 }) {
   const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
-  const comments = JSON.parse(_comments) as Comment[];
+  const comments = JSON.parse(_comments) as CustomComment[];
   // const comments = ["TITLE 1", "TITLE 2", "TITLE 3"];
   const BODY =
     "## 0xE has maliciously denied other team members admin access to Yam's core infrastructure. Multiple services have been lost and discontinued due to 0xE gate keeping of access to these services. 1. Yam's Forum which was the primary discussion point for all Yam improvement proposals. The information that was stored on the forums, many contributors spend months creating are now lost. 2. Yam's Gsuite which includes all contributor email and correspondence. There is possibility that any service that requires a payment will also be discontinued, ie. website hosting and domain name. Snapshot has been approved since Jan 29th 2023 to \"0xE needs to give access to all yam.finance infrastructure to active yam team members that have history of supporting yam.\" https://snapshot.org/#/yam.eth/proposal/0x7e4a82c045f51625d9d707b09214b77f95ad4697ba06aa5ed9737e662afe5eeb Multiple requests have been made and ignored over the past 3 months. ### At this point, it is clear that 0xE has no intentions of allowing other core team members access to the infrastructure to repair the damage that he has done. ## This snapshot is to remove 0xE from the Guardian Multisig and Operations Multisig and any other Yam related infrastructure that we are able to (no others at the moment)";
@@ -116,6 +136,25 @@ export default function Proposals({
         </Typography>
       </Box>
     );
+    const [comment, setComment] = useState("");
+    const submit = async () => {
+      const obj = {
+        proposalId: proposal.id,
+        content: comment,
+      };
+
+      await performPOST(
+        "/api/comments/create",
+        JSON.stringify(obj),
+        (res: any) => {
+          console.log("create comment res:", res);
+          location.reload();
+        },
+        (err: any) => {
+          console.log("create comment err:", err);
+        }
+      );
+    };
     return (
       <>
         <Box sx={{ border: "black solid 3px", borderRadius: 3, p: 2, mb: 2 }}>
@@ -155,7 +194,7 @@ export default function Proposals({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton disableRipple>
+                  <IconButton onClick={submit}>
                     <SendIcon />
                   </IconButton>
                 </InputAdornment>
@@ -169,6 +208,10 @@ export default function Proposals({
             id="outlined-basic"
             label="Comment"
             variant="outlined"
+            value={comment}
+            onChange={(e) => {
+              setComment(e.target.value);
+            }}
           />
 
           <List>
@@ -192,7 +235,7 @@ export default function Proposals({
                       flexDirection: "row",
                     }}
                   >
-                    <Typography variant="h6">Rachid</Typography>
+                    <Typography variant="h6">{c.username}</Typography>
                   </Box>
                   <Typography
                     sx={{ display: "inline-flex", p: 1 }}
@@ -201,18 +244,36 @@ export default function Proposals({
                     {c.content}
                   </Typography>
                   <Typography
-                    sx={{ position: "absolute", bottom: 0, left: 0, p: 2 }}
+                    sx={{ position: "absolute", bottom: 0, right: 0, p: 2 }}
                     variant="body2"
                   >
                     {formatTime(new Date(c.createdAt))}
                   </Typography>
 
-                  <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
-                    {/* Actions */}
-                    <IconButton disableRipple>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
+                  {isAdmin && (
+                    <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
+                      {/* Actions */}
+                      <IconButton
+                        disableRipple
+                        onClick={async () => {
+                          const obj = { commentId: c.id };
+                          await performPOST(
+                            "/api/comments/delete",
+                            JSON.stringify(obj),
+                            (res: any) => {
+                              console.log("delete comment res:", res);
+                              location.reload();
+                            },
+                            (err: any) => {
+                              console.log("delete comment err:", err);
+                            }
+                          );
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  )}
                 </Box>
               </ListItem>
             ))}
