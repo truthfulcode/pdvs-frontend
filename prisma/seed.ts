@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { prisma } from "../src/utils/prisma";
+import { AdminVotingToken } from "../src/AdminVotingToken";
+import { Address } from "viem";
 
 async function main() {
   const filler =
@@ -78,6 +79,21 @@ async function main() {
     u4: "0x2281b9e03f112B8538349eDA2d777Dc16D17Ff93",
   };
 
+  const vt = new AdminVotingToken();
+
+  async function mint(
+    userAddress: string,
+    cgpa: number,
+    userType: "STUDENT" | "CM"
+  ) {
+    const simulation = await vt.simulate("adjust", [
+      userAddress as Address,
+      cgpa,
+      userType === "CM" ? 2 : 1,
+    ]);
+    await vt.execute(simulation.request);
+  }
+
   const users = await prisma.user.createMany({
     data: [
       {
@@ -117,6 +133,13 @@ async function main() {
       },
     ],
   });
+
+  // TODO if needed
+
+  // await mint(ADDRESSES.u1, 350, "STUDENT");
+  // await mint(ADDRESSES.u2, 350, "CM");
+  // await mint(ADDRESSES.u3, 350, "STUDENT");
+  // await mint(ADDRESSES.u4, 350, "CM");
 
   const u1 = await prisma.user.findFirst({
     where: {

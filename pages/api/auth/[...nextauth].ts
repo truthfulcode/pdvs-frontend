@@ -9,7 +9,6 @@ import {
   getUserByAddress,
   isUserAdmin,
 } from "../../../prisma/operations/users/read";
-import { ADDRESSES } from "@/utils/constants";
 
 declare module "next-auth" {
   interface Session extends SIWESession {
@@ -18,10 +17,6 @@ declare module "next-auth" {
   }
 }
 
-/*
- * For more information on each option (and a full list of options) go to
- * https://next-auth.js.org/configuration/options
- */
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   const _authOptions = await authOptions(req, res);
   return await nextAuth(req, res, _authOptions);
@@ -55,7 +50,6 @@ export const authOptions = async (
         },
       },
       async authorize(credentials) {
-        console.log("authorizing:");
         try {
           if (!credentials?.message) {
             throw new Error("SiweMessage is undefined");
@@ -68,7 +62,6 @@ export const authOptions = async (
           if (!_isUserAdmin) {
             // TODO query record from blockchain
             const userRecord = await getUserByAddress(addr);
-            console.log("record", userRecord);
             if (!userRecord) {
               return null;
             }
@@ -78,7 +71,6 @@ export const authOptions = async (
             `https://rpc.walletconnect.com/v1?chainId=eip155:${siwe.chainId}&projectId=${projectId}`
           );
           const nonce = await getCsrfToken({ req: { headers: req.headers } });
-          console.log("authorize csrf nonce", nonce);
           const result = await siwe.verify(
             {
               signature: credentials?.signature || "",

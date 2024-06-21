@@ -1,48 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import createUser from "../../../prisma/operations/users/create";
-import { client, walletClient } from "@/utils/utils";
-import { ADDRESSES } from "@/utils/constants";
-import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { AdminVotingToken } from "@/AdminVotingToken";
 import { createProposal } from "../../../prisma/operations/proposals/create";
-import { isUserAdmin, isUserAdmin } from "../../../prisma/operations/users/read";
-type ResponseData = {
-  message: string;
-};
+import { isUserAdmin } from "../../../prisma/operations/users/read";
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<{
+    message: string;
+  }>
 ) {
   const { method, body } = req;
   const { title, content } = body;
-  console.log("body", body);
 
   async function session() {
     try {
-      console.log("add call it");
-      // console.log("req",req)
-      // const session = await getSession({req})
       const session = await getServerSession(
         req,
         res,
         await authOptions(req, res)
       );
-      console.log("START");
-
-      console.log("session:", session);
 
       if (session) {
         const _isUserAdmin = await isUserAdmin(session.address);
         if (_isUserAdmin) {
-          console.log("START_ADMIN");
-
-          // TODO register the proposal
           const result = await createProposal({ title, content });
-
-          console.log("create proposal", result);
 
           return res.status(200).json({ message: "success" });
         } else {

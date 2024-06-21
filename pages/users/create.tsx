@@ -1,36 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
-import { useAccount } from "wagmi";
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  List,
-  ListItem,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { useEffect, useState } from "react";
+import { useBalance } from "wagmi";
+import { Box, Tooltip } from "@mui/material";
+import { useState } from "react";
 import { isAddress } from "viem";
-import { useSession } from "next-auth/react";
 import { User } from "@/utils/types";
 import { UserType } from "@prisma/client";
-import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { performBriefPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
-
-const styling = {
-  row: { display: "flex", flexDirection: "row" },
-  column: { display: "flex", flexDirection: "column" },
-};
+import { ADDRESSES } from "@/utils/constants";
+import { useAuth } from "@/hooks/useAuth";
 
 type VariableState = {
   value: string;
@@ -53,9 +34,9 @@ type VarKeys = {
 };
 
 export default function Home() {
-  const { address } = useAccount();
-  const { data: sessionData, status, update } = useSession();
-  console.log("status", status);
+  const { data: balance } = useBalance({ address: ADDRESSES.keeper });
+  const { isAuth } = useAuth();
+
   const [data, setData] = useState<VarKeys>({
     address: defaultValue,
     matricNumber: defaultValue,
@@ -67,12 +48,8 @@ export default function Home() {
     fullName: defaultValue,
   });
 
-  const [val, setVal] = useState("");
-
   const handleRegistration = (e: any) => {
     e.preventDefault();
-
-    console.log(data);
   };
 
   const handleChange = (e: any) => {
@@ -103,10 +80,6 @@ export default function Home() {
         validation = false;
         break;
     }
-    console.log(name, value);
-
-    // setVal((v) => value);
-    // setTab(nextTab);
 
     setData((prev) => ({
       ...prev,
@@ -115,8 +88,6 @@ export default function Home() {
         errorMsg,
       } as VariableState,
     }));
-
-    console.log("print", data, name, value);
   };
 
   // Destructure data
@@ -144,12 +115,23 @@ export default function Home() {
     <main>
       <NavBar />
       <Box className={styles.main}>
-        <RestrictedPage validAccess={status === "authenticated"}>
+        <RestrictedPage validAccess={!!isAuth}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
               Create New User{" "}
             </h1>
             <form method="POST" onSubmit={handleRegistration}>
+              <div className="mb-4 flex justify-between">
+                <Tooltip title="Keeper is the address used to register users in the server">
+                  <label className="text-gray-700 font-bold">
+                    Keeper Balance:
+                  </label>
+                </Tooltip>
+                <label className="text-gray-700 font-bold">
+                  {balance ? Number(balance.formatted).toFixed(4) : 0} tBNB
+                </label>
+              </div>
+
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Full Name
@@ -198,7 +180,7 @@ export default function Home() {
               <div className="max-w-lg w-58 mx-auto mb-4">
                 <label
                   htmlFor="number-input"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className="block text-gray-700 text-sm font-bold mb-2"
                 >
                   Enter CGPA:
                 </label>
@@ -218,7 +200,6 @@ export default function Home() {
                   onChange={(e) => {
                     const { name, value } = e.target;
                     let _value = value;
-                    console.log("val", value);
 
                     if (Number(value) > 4) {
                       _value = "4";
@@ -226,7 +207,6 @@ export default function Home() {
                       _value = "0";
                     }
 
-                    console.log(_value);
                     setData((prev) => ({
                       ...prev,
                       [name]: {
@@ -278,7 +258,7 @@ export default function Home() {
                         </span>
                       </label>
                       <label
-                        className="mt-px font-light text-gray-700 cursor-pointer select-none"
+                        className="mt-px  cursor-pointer select-none text-gray-700 text-sm font-bold"
                         htmlFor="html"
                       >
                         {o}

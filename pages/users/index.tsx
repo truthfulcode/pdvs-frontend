@@ -1,26 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
-import { useAccount } from "wagmi";
-import { Box, Button, List, ListItem, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { getSession, useSession } from "next-auth/react";
-import Link from "next/link";
-import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { useSession } from "next-auth/react";
+import { performBriefPOST } from "@/utils/httpRequest";
 import { getListings } from "../../prisma/operations/users/read";
 import { useState } from "react";
-import { authOptions } from "../api/auth/[...nextauth]";
-import { getServerSession } from "next-auth";
 import RestrictedPage from "@/components/RestrictedPage";
-
-const styling = {
-  row: { display: "flex", flexDirection: "row" },
-  column: { display: "flex", flexDirection: "column" },
-};
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
@@ -37,9 +26,7 @@ export const getServerSideProps = async () => {
 };
 
 export default function Home({ listings }: { listings: any }) {
-  const { address } = useAccount();
   const { data: session, status } = useSession();
-  console.log("session", session);
   const [deleteId, setDeleteId] = useState("");
 
   // TODO revoke authentication access upon user removal
@@ -71,7 +58,6 @@ export default function Home({ listings }: { listings: any }) {
     );
   };
 
-  console.log("listings", listings);
   async function submit(userId: string) {
     await performBriefPOST(
       "/api/users/delete",
@@ -115,21 +101,18 @@ export default function Home({ listings }: { listings: any }) {
       width: 110,
       getActions: ({ id }) => [
         <GridActionsCellItem
+          key={id}
           icon={<DeleteIcon />}
           onClick={async () => {
-            // removes user
-            // TODO add userId
-            console.log("to be deleted id", id);
             setDeleteId(id as string);
             (
-              document.getElementById("my_modal_1") as HTMLInputElement
+              document.getElementById("my_modal_1") as HTMLDialogElement
             ).showModal();
             // await submit("1");
           }}
           label="Delete"
         />,
       ],
-      //   getActions:({id}) => { return ("")}
     },
   ];
   const rows = [
@@ -203,7 +186,25 @@ export default function Home({ listings }: { listings: any }) {
       <NavBar />
       <Box className={styles.main}>
         <RestrictedPage validAccess={!!session}>
-          <Button href="/users/create">Create User</Button>
+          <Box
+            sx={{
+              width: "860px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              sx={{
+                color: "black",
+                border: "2px black solid",
+                borderRadius: 2,
+                mb: 1,
+              }}
+              href="/users/create"
+            >
+              Create User
+            </Button>
+          </Box>
           <Modal />
           {listings.length === 0 ? (
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">

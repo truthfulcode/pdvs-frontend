@@ -1,28 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import createUser from "../../../prisma/operations/users/create";
-import { client, walletClient } from "@/utils/utils";
-import { ADDRESSES } from "@/utils/constants";
-import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { AdminVotingToken } from "@/AdminVotingToken";
-import {
-  getUserByAddress,
-  isUserAdmin,
-} from "../../../prisma/operations/users/read";
+import { getUserByAddress } from "../../../prisma/operations/users/read";
 import { createComment } from "../../../prisma/operations/comments/create";
-type ResponseData = {
-  message: string;
-};
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<{
+    message: string;
+  }>
 ) {
   const vt = new AdminVotingToken();
 
   const { method, body } = req;
-  console.log("body", body);
   const { proposalId, content } = body;
 
   async function session() {
@@ -42,8 +33,6 @@ export default function handler(
             proposalId,
             content,
           });
-
-          console.log("comment result", result);
 
           return res.status(200).json({ message: "success" });
         } else {
