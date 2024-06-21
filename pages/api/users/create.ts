@@ -1,60 +1,41 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import createUser from "../../../prisma/operations/users/create";
-import { client, walletClient } from "@/utils/utils";
-import { ADDRESSES } from "@/utils/constants";
-import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { AdminVotingToken } from "@/AdminVotingToken";
 import { isUserAdmin } from "../../../prisma/operations/users/read";
-type ResponseData = {
-  message: string;
-};
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<{
+    message: string;
+  }>
 ) {
   const vt = new AdminVotingToken();
 
   const { method, body } = req;
-  console.log("body", body);
   const { userType, userAddress, matricNumber, cgpa, fullName } = body;
 
   async function session() {
     try {
-      console.log("add call it");
-      // console.log("req",req)
-      // const session = await getSession({req})
       const session = await getServerSession(
         req,
         res,
         await authOptions(req, res)
       );
-      //   {
-      //   req: req,
-      // });
-
-      console.log("START");
-
-      console.log("session:", session);
 
       if (session) {
         const _isUserAdmin = await isUserAdmin(session.address);
 
         if (_isUserAdmin) {
-          console.log("START_ADMIN");
-          // braodcast the transaction to the blockchain
-
           const castedCgpa = Number((cgpa * 100).toFixed(0));
 
-          const simulation = await vt.simulate("mint", [
+          const simulation = await vt.simulate("adjust", [
             userAddress,
             castedCgpa,
             userType === "CM" ? 2 : 1,
           ]);
 
-          // TODO register the user
           const result = await createUser({
             userType,
             userAddress,
@@ -62,8 +43,6 @@ export default function handler(
             cgpa: castedCgpa,
             fullName,
           });
-
-          console.log("create user", result);
 
           await vt.execute(simulation.request);
 

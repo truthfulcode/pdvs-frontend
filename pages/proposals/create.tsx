@@ -1,31 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
 import { useAccount } from "wagmi";
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  List,
-  ListItem,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { useEffect, useState } from "react";
-import { isAddress } from "viem";
+import { Box } from "@mui/material";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Proposal, User } from "@/utils/types";
-import { UserType } from "@prisma/client";
-import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { Proposal } from "@/utils/types";
+import { performBriefPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
+import { useRouter } from "next/router";
+import { useAuth } from "@/hooks/useAuth";
 
 const styling = {
   row: { display: "flex", flexDirection: "row" },
@@ -50,7 +35,7 @@ type VarKeys = {
 export default function Home() {
   const { address } = useAccount();
   const { data: sessionData, status, update } = useSession();
-  console.log("status", status);
+  const { isAuth } = useAuth();
   const [data, setData] = useState<VarKeys>({
     title: defaultValue,
     content: defaultValue,
@@ -58,14 +43,12 @@ export default function Home() {
 
   const handleRegistration = (e: any) => {
     e.preventDefault();
-
-    console.log(data);
   };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     let validation = false;
-    let errorMsg: string | undefined = undefined;
+    const errorMsg: string | undefined = undefined;
     switch (name) {
       case "title":
         validation = true;
@@ -77,10 +60,6 @@ export default function Home() {
         validation = false;
         break;
     }
-    console.log(name, value);
-
-    // setVal((v) => value);
-    // setTab(nextTab);
 
     setData((prev) => ({
       ...prev,
@@ -89,8 +68,6 @@ export default function Home() {
         errorMsg,
       } as VariableState,
     }));
-
-    console.log("print", data, name, value);
   };
 
   // Destructure data
@@ -98,6 +75,8 @@ export default function Home() {
 
   // Disable submit button until all fields are filled in
   const canSubmit = [...Object.values(allData)].every((v) => !v.errorMsg);
+
+  const router = useRouter();
 
   async function submit() {
     const obj: Proposal = {
@@ -110,14 +89,16 @@ export default function Home() {
       JSON.stringify(obj),
       "create proposal"
     );
+    router.push("/proposals/");
   }
+
   return (
     <main>
       <NavBar />
       <Box className={styles.main}>
-        <RestrictedPage validAccess={status === "authenticated"}>
+        <RestrictedPage validAccess={!!isAuth}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl ">
               Create New Proposal{" "}
             </h1>
             <form className="w-1/2" method="POST" onSubmit={handleRegistration}>
@@ -127,7 +108,7 @@ export default function Home() {
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
                   id="title"
                   name="title"
                   type="text"
@@ -137,14 +118,14 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-gray-900 ">
                   Proposal details
                 </label>
                 <textarea
                   onChange={handleChange}
                   // style={{width:'80%'}}
                   rows={4}
-                  className="block mb-4 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="block mb-4 p-2.5 w-full text-sm text-white bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   id="content"
                   name="content"
                   placeholder="Write your proposal here..."
@@ -156,7 +137,7 @@ export default function Home() {
                   disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
-                  className="btn btn-wide"
+                  className="btn btn-wide text-white"
                 >
                   CREATE
                 </button>

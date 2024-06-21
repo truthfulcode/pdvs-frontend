@@ -1,7 +1,11 @@
 import { Address, defineChain } from "viem";
 require("dotenv").config();
 
-export const ADDRESSES = { tokenAddress: "0x5e5a4CeD813ED3d7d83aA5f308133b070C2eE10B" as Address, admin: "0x17fBA9Eb71F040d57d19B48A28002FfE32380DF8"};
+export const ADDRESSES = {
+  tokenAddress: "0x96040854dd0fDB4F2B32F659E9D0e2B7489d419b" as Address,
+  admin: "0x17fBA9Eb71F040d57d19B48A28002FfE32380DF8" as Address,
+  keeper: "0x31AbDc2218F45bA76626b86149a6edB5cC2a7134" as Address,
+};
 
 export const chains = {
   mainnet: defineChain({

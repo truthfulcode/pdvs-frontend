@@ -5,6 +5,18 @@ import { ReactNode } from "react";
 export default function Loading({ children }: { children: ReactNode }) {
   const { status } = useSession();
 
+  return (
+    <CustomLoading active={status === "loading"}> {children } </CustomLoading>
+  );
+}
+
+export function CustomLoading({
+  children,
+  active,
+}: {
+  children: ReactNode;
+  active: boolean;
+}) {
   const LoadingSpinner = () => (
     <Box
       sx={{
@@ -20,5 +32,5 @@ export default function Loading({ children }: { children: ReactNode }) {
       <CircularProgress />
     </Box>
   );
-  return status === "loading" ? <LoadingSpinner /> : children;
+  return active ? <LoadingSpinner /> : children;
 }

@@ -1,6 +1,82 @@
 import { gql } from "@apollo/client";
 import { spaceName } from "../config";
 
+export function constructProposalGQL(proposalId: string) {
+  return gql`
+    query {
+      proposal(id: "${proposalId}") {
+        id
+        title
+        body
+        choices
+        start
+        end
+        snapshot
+        state
+        author
+        created
+        scores
+        scores_by_strategy
+        scores_total
+        scores_updated
+        plugins
+        network
+        strategies {
+          name
+          network
+          params
+        }
+        space {
+          id
+          name
+        }
+      }
+    }
+  `;
+}
+
+export function constructVotesGQL(proposalId: string, voter: string) {
+  return gql`
+    query {
+      votes(
+        first: 10
+        skip: 0
+        where: { proposal: "${proposalId}", voter: "${voter}" }
+        orderDirection: desc
+      ) {
+        id
+        vp
+        vp_by_strategy
+        vp_state
+        created
+        proposal {
+          id
+        }
+        choice
+        space {
+          id
+        }
+      }
+    }
+  `;
+}
+
+export function constructVotingPowerGQL(proposalId: string, voter: string) {
+  return gql`
+    query {
+      vp(
+        proposal: "${proposalId}"
+        voter: "${voter}"
+        space: "${spaceName}"
+      ) {
+        vp
+        vp_by_strategy
+        vp_state
+      }
+    }
+  `;
+}
+
 export const GQLs = {
   PROPOSALS: gql`
     query {
@@ -24,37 +100,6 @@ export const GQLs = {
         scores_total
         scores_updated
         author
-        space {
-          id
-          name
-        }
-      }
-    }
-  `,
-  PROPOSAL: gql`
-    query {
-      proposal(id: "QmWbpCtwdLzxuLKnMW4Vv4MPFd2pdPX71YBKPasfZxqLUS") {
-        id
-        title
-        body
-        choices
-        start
-        end
-        snapshot
-        state
-        author
-        created
-        scores
-        scores_by_strategy
-        scores_total
-        scores_updated
-        plugins
-        network
-        strategies {
-          name
-          network
-          params
-        }
         space {
           id
           name

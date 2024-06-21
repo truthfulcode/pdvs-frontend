@@ -1,4 +1,4 @@
-import { UserType } from "@prisma/client";
+import { Comment, UserType } from "@prisma/client";
 
 export type User = {
   userType: UserType;
@@ -11,4 +11,10 @@ export type User = {
 export type Proposal = {
   title: string;
   content: string;
-}; 
+};
+
+export type CustomComment = Comment & {
+  username: string;
+  userType: string;
+  isEditable: boolean;
+};

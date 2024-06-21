@@ -20,14 +20,18 @@ model User {
 }
 
 model Proposal {
-    id             String           @id @default(auto()) @map("_id") @db.ObjectId
-    title          String
-    content        String
-    likesCount     Int
-    createdAt      DateTime
-    status         ProposalStatus
-    LikedProposals LikedProposals[]
-    comments       Comment[]
+    id                  String           @id @default(auto()) @map("_id") @db.ObjectId
+    title               String
+    content             String
+    likesCount          Int
+    createdAt           DateTime
+    blockNumberSnapshot BigInt?
+    snapshotProposalId  String?
+    proposalIdHash      String?
+    proposalIpfs        String?
+    status              ProposalStatus
+    LikedProposals      LikedProposals[]
+    comments            Comment[]
 }
 
 model LikedProposals {
@@ -41,7 +45,7 @@ model LikedProposals {
 model Comment {
     id         String    @id @default(auto()) @map("_id") @db.ObjectId
     content    String
-    createdAt      DateTime
+    createdAt  DateTime
     author     User      @relation(fields: [authorId], references: [id])
     authorId   String    @db.ObjectId
     proposal   Proposal  @relation(fields: [proposalId], references: [id])

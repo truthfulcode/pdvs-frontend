@@ -1,16 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import createUser from "../../../prisma/operations/users/create";
-import { client, walletClient } from "@/utils/utils";
-import { ADDRESSES } from "@/utils/constants";
-import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { AdminVotingToken } from "@/AdminVotingToken";
-import { createProposal } from "../../../prisma/operations/proposals/create";
+import { getUserByAddress } from "../../../prisma/operations/users/read";
 import {
-  isUserAdmin,
-} from "../../../prisma/operations/users/read";
-import { updateProposal } from "../../../prisma/operations/proposals/put";
+  activateProposal,
+  publishProposal,
+  updateProposal,
+} from "../../../prisma/operations/proposals/put";
+import { getProposalById } from "../../../prisma/operations/proposals/read";
+import { SnapshotGraphQL } from "@/snapshot/graphql/SnapshotGraphQL";
+import { spaceName } from "@/snapshot/config";
+
 type ResponseData = {
   message: string;
 };
@@ -20,31 +20,60 @@ export default function handler(
   res: NextApiResponse<ResponseData>
 ) {
   const { method, body } = req;
-  const { proposalId, title, content } = body;
-  console.log("body", body);
+  const { action, proposalId, title, content, proposalDigest } = body;
 
   async function session() {
     try {
-      console.log("add call it");
-      // console.log("req",req)
-      // const session = await getSession({req})
       const session = await getServerSession(
         req,
         res,
         await authOptions(req, res)
       );
-      console.log("START");
-
-      console.log("session:", session);
 
       if (session) {
-        const _isUserAdmin = await isUserAdmin(session.address);
-        if (_isUserAdmin) {
-          console.log("START_ADMIN");
+        const u = await getUserByAddress(session.address);
+        if (u && ["ADMIN", "CM"].includes(u.userType)) {
+          switch (action) {
+            case "updateInfo":
+              await updateProposal(proposalId, {
+                title,
+                content,
+              });
+              break;
+            case "activate":
+              if (u.userType !== "ADMIN") {
+                return res.status(401).json({ message: "User Not Admin!" });
+              }
+              await activateProposal(proposalId);
+              break;
+            case "publish":
+              if (u.userType !== "ADMIN") {
+                return res.status(401).json({ message: "User Not Admin!" });
+              }
+              // TODO add extra checking
+              const id = proposalDigest.id;
+              const ipfs = proposalDigest.ipfs;
+              console.log("hash id", id);
+              console.log("digest", proposalDigest);
+              const snap = new SnapshotGraphQL();
+              const proposal = await snap.getProposal(id as string);
+              console.log(proposal);
+              if (!proposal) throw Error("Proposal not found!");
+              if (proposal.space.id !== spaceName)
+                throw Error("Invalid space name!");
+              const proposalRecord = await getProposalById(proposalId);
+              if (proposalRecord?.title !== proposal.title)
+                throw Error("Title mismatch!");
+              if (proposalRecord?.content !== proposal.content)
+                throw Error("Content mismatch!");
 
-          const result = await updateProposal(proposalId, { title, content });
-
-          console.log("edit proposal", result);
+              await publishProposal(proposalId, id, ipfs);
+              break;
+            default:
+              return res
+                .status(500)
+                .json({ message: "Invalid proposal edit action!" });
+          }
 
           return res.status(200).json({ message: "success" });
         } else {

@@ -1,22 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import createUser from "../../../prisma/operations/users/create";
-import { client, walletClient } from "@/utils/utils";
-import { ADDRESSES } from "@/utils/constants";
-import votingTokenAbi from "../../../src/abi/VotingToken.json";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { AdminVotingToken } from "@/AdminVotingToken";
-import { createProposal } from "../../../prisma/operations/proposals/create";
 import { processLike } from "../../../prisma/operations/proposals/put";
 import { getUserByAddress } from "../../../prisma/operations/users/read";
 import { getProposalById } from "../../../prisma/operations/proposals/read";
-type ResponseData = {
-  message: string;
-};
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<{
+    message: string;
+  }>
 ) {
   const { method, body } = req;
   const { proposalId } = body;

@@ -1,4 +1,3 @@
-import { Proposal } from "@/utils/types";
 import { prisma } from "../../../src/utils/prisma";
 
 export async function updateComment(
@@ -14,9 +13,9 @@ export async function updateComment(
 
   if (!c) throw Error("Comment doesn't exist!");
   if (c.authorId !== userId) throw Error("Caller not the author!");
-  let createdAt = new Date(c.createdAt);
-  let expirationAtTime = createdAt.getTime() + 10 * 60 * 1000;
-  let now = new Date().getTime();
+  const createdAt = new Date(c.createdAt);
+  const expirationAtTime = createdAt.getTime() + 10 * 60 * 1000;
+  const now = new Date().getTime();
   if (now > expirationAtTime) throw Error("Editing period expired!");
   return await prisma.comment.update({
     where: {

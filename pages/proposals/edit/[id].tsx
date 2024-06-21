@@ -2,26 +2,11 @@
 
 import styles from "../../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
-import {
-  Box,
-  Divider,
-  IconButton,
-  InputAdornment,
-  List,
-  ListItem,
-  TextField,
-  TextareaAutosize,
-  Typography,
-} from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useEffect, useState } from "react";
-import { SnapshotGraphQL } from "@/snapshot/graphql/SnapshotGraphQL";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
+import { Box } from "@mui/material";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import { Proposal } from "@prisma/client";
-import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { performPOST } from "@/utils/httpRequest";
 import { getProposalLiked } from "../../../prisma/operations/proposals/put";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -29,21 +14,26 @@ import { getUserByAddress } from "../../../prisma/operations/users/read";
 import { getProposalById } from "../../../prisma/operations/proposals/read";
 import RestrictedPage from "@/components/RestrictedPage";
 import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
+import { isValidObjectId } from "@/utils/utils";
 
-export const getServerSideProps = async ({ params, req, res }) => {
+export const getServerSideProps = async (ctx: any) => {
+  const { params, req, res } = ctx;
   const { id } = params;
+  const isValidId = isValidObjectId(id);
 
   // Fetch data from external API
-  let proposal = await getProposalById(id as string);
 
   const session = await getServerSession(req, res, await authOptions(req, res));
-  console.log("print all", id, session?.address);
   let isLiked = false;
+  let proposal = null;
+
+  if (isValidId) proposal = await getProposalById(id as string);
 
   if (session?.address) {
     const user = await getUserByAddress(session.address);
-    if (user) {
-      let result = await getProposalLiked(user.id, id);
+    if (proposal && user) {
+      const result = await getProposalLiked(user.id, id);
       isLiked = !!result;
     }
   }
@@ -71,16 +61,18 @@ export default function Proposals({
 }) {
   const { data: sessionData, status } = useSession();
   const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
-  const [title, setTitle] = useState(proposal.title);
-  const [content, setContent] = useState(proposal.content);
+  const [title, setTitle] = useState(proposal ? proposal.title : "");
+  const [content, setContent] = useState(proposal ? proposal.content : "");
   const comments = ["TITLE 1", "TITLE 2", "TITLE 3"];
+  const { isAuth } = useAuth();
+
   const [data, setData] = useState<VarKeys>({
     title: {
-      value: proposal.title,
+      value: proposal ? proposal.title : "",
       errorMsg: undefined,
     } as VariableState,
     content: {
-      value: proposal.content,
+      value: proposal ? proposal.content : "",
       errorMsg: undefined,
     } as VariableState,
   });
@@ -88,7 +80,7 @@ export default function Proposals({
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     let validation = false;
-    let errorMsg: string | undefined = undefined;
+    const errorMsg: string | undefined = undefined;
     switch (name) {
       case "title":
         validation = true;
@@ -100,10 +92,6 @@ export default function Proposals({
         validation = false;
         break;
     }
-    console.log(name, value);
-
-    // setVal((v) => value);
-    // setTab(nextTab);
 
     setData((prev) => ({
       ...prev,
@@ -112,14 +100,13 @@ export default function Proposals({
         errorMsg,
       } as VariableState,
     }));
-
-    console.log("print", data, name, value);
   };
 
   const router = useRouter();
 
   async function submit() {
     const obj = {
+      action: "updateInfo",
       proposalId: proposal.id,
       title: data.title.value,
       content: data.content.value,
@@ -130,7 +117,7 @@ export default function Proposals({
       JSON.stringify(obj),
       (res: any) => {
         console.log("edit proposal res:", res);
-        router.push("/proposals/")
+        router.push("/proposals/");
       },
       (err: any) => {
         console.log("edit proposal err:", err);
@@ -145,9 +132,9 @@ export default function Proposals({
     <main>
       <NavBar />
       <Box className={styles.main}>
-        <RestrictedPage validAccess={status === "authenticated"}>
+        <RestrictedPage validAccess={isAuth as boolean}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-black md:text-4xl lg:text-5xl">
               Edit Proposal{" "}
             </h1>
             <form
@@ -163,7 +150,7 @@ export default function Proposals({
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
                   id="title"
                   name="title"
                   type="text"
@@ -173,7 +160,7 @@ export default function Proposals({
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label className="block mb-2 text-sm font-medium text-black">
                   Proposal details
                 </label>
                 <textarea
@@ -192,7 +179,7 @@ export default function Proposals({
                   // disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
-                  className="btn btn-wide"
+                  className="btn btn-wide text-white"
                 >
                   UPDATE
                 </button>

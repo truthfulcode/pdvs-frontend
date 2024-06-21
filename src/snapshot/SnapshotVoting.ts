@@ -43,19 +43,21 @@ export class SnapshotVoting {
     snapshotBlockHeight: number;
   }) {
     const web3 = new Web3Provider(this.provider);
-
-    return await client.proposal(web3, account, {
+    console.log("times", startTime, Math.floor(startTime + 60 * 60 * 24 * 7));
+    const receipt = await client.proposal(web3, account, {
       space: spaceName,
       title: title,
       body: body,
       discussion: discussionLink,
       start: startTime,
-      end: startTime + 60 * 60 * 24 * 7, // hardcoded 1 week
+      end: Math.floor(startTime + 60 * 60 * 24 * 7), // hardcoded 1 week
       snapshot: snapshotBlockHeight,
       plugins: JSON.stringify({}),
       app: appName, // provide the name of your project which is using this snapshot.js integration
       type: "single-choice", // define the voting system
       choices: ["In Favor", "Against", "Abstain"],
     });
+
+    return receipt;
   }
 }

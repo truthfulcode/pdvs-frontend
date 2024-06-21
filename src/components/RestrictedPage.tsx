@@ -7,6 +7,5 @@ export default function RestrictedPage({
   validAccess: boolean;
   children: ReactNode;
 }) {
-  // return children;
     return validAccess ? children : <>Admin restricted page</>;
 }

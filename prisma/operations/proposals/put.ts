@@ -1,6 +1,7 @@
 import { Proposal } from "@/utils/types";
 import { prisma } from "../../../src/utils/prisma";
 import { getProposalById } from "./read";
+import { client } from "@/utils/utils";
 
 export async function processLike(userId: string, proposalId: string) {
   // Check if the user has already liked the proposal
@@ -96,6 +97,58 @@ export async function updateProposal(
     data: {
       title,
       content,
+    },
+  });
+}
+
+export async function activateProposal(proposalId: string) {
+  const p = await prisma.proposal.findFirst({
+    where: {
+      id: proposalId,
+    },
+  });
+
+  if (!p) throw Error("Proposal not found!");
+
+  if (p.status !== "Draft")
+    throw Error(`Proposal is in ${p?.status} status and not Draft!`);
+
+  const lastBlockNumber = await client.getBlockNumber();
+  await prisma.proposal.update({
+    where: {
+      id: proposalId,
+    },
+    data: {
+      blockNumberSnapshot: lastBlockNumber,
+      status: "Active",
+    },
+  });
+}
+
+export async function publishProposal(
+  proposalId: string,
+  proposalHash: string,
+  proposalIpfs: string
+) {
+  const p = await prisma.proposal.findFirst({
+    where: {
+      id: proposalId,
+    },
+  });
+
+  if (!p) throw Error("Proposal not found!");
+
+  if (p.status !== "Active")
+    throw Error(`Proposal is in ${p?.status} status and not Active!`);
+
+  await prisma.proposal.update({
+    where: {
+      id: proposalId,
+    },
+    data: {
+      status: "Published",
+      proposalIdHash: proposalHash,
+      proposalIpfs,
     },
   });
 }
