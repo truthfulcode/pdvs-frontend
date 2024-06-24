@@ -7,7 +7,6 @@ import {
   publishProposal,
   updateProposal,
 } from "../../../prisma/operations/proposals/put";
-import { getProposalById } from "../../../prisma/operations/proposals/read";
 import { SnapshotGraphQL } from "@/snapshot/graphql/SnapshotGraphQL";
 import { spaceName } from "@/snapshot/config";
 
@@ -61,12 +60,7 @@ export default function handler(
               if (!proposal) throw Error("Proposal not found!");
               if (proposal.space.id !== spaceName)
                 throw Error("Invalid space name!");
-              const proposalRecord = await getProposalById(proposalId);
-              if (proposalRecord?.title !== proposal.title)
-                throw Error("Title mismatch!");
-              if (proposalRecord?.content !== proposal.content)
-                throw Error("Content mismatch!");
-
+    
               await publishProposal(proposalId, id, ipfs);
               break;
             default:
