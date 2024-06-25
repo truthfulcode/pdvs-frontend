@@ -18,3 +18,5 @@ export type CustomComment = Comment & {
   userType: string;
   isEditable: boolean;
 };
+
+export type AlertType = 'success' | 'info' | 'warning' | 'error'
