@@ -146,7 +146,9 @@ const ProposalDisplay = ({
 
     return (
       <>
-        <Box sx={{ border: "black solid 3px", borderRadius: 3, p: 2, mb: 2 }}>
+        <Box sx={{ border: "black solid 3px", borderRadius: 3, p: 2, mb: 2, 
+          minWidth: "75%"
+         }}>
           <Box
             sx={{
               display: "flex",
