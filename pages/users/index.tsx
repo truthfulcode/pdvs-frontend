@@ -76,7 +76,7 @@ export default function Home({ listings }: { listings: any }) {
     );
   }
 
-  const columns: GridColDef<(typeof rows)[number]>[] = [
+  const columns: GridColDef<(typeof listings)[number]>[] = [
     { field: "id", headerName: "ID", width: 90 },
     { field: "userAddress", headerName: "Address", width: 90, sortable: false },
     {
@@ -85,7 +85,7 @@ export default function Home({ listings }: { listings: any }) {
       width: 150,
     },
     {
-      field: "matricNo",
+      field: "matricNumber",
       headerName: "Matric no",
       width: 150,
       sortable: false,
@@ -118,76 +118,10 @@ export default function Home({ listings }: { listings: any }) {
             (
               document.getElementById("my_modal_1") as HTMLDialogElement
             ).showModal();
-            // await submit("1");
           }}
           label="Delete"
         />,
       ],
-    },
-  ];
-  const rows = [
-    {
-      id: 1,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "S",
-      matricNo: "A20EC4040",
-      cgpa: 3.5,
-    },
-    {
-      id: 2,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "CM",
-      matricNo: "A20EC4041",
-      cgpa: 3.89,
-    },
-    {
-      id: 3,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "S",
-      matricNo: "A20EC4042",
-      cgpa: 3.46,
-    },
-    {
-      id: 4,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "CM",
-      matricNo: "A20EC4043",
-      cgpa: 2.37,
-    },
-    {
-      id: 5,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "S",
-      matricNo: "A20EC4044",
-      cgpa: 2.98,
-    },
-    {
-      id: 6,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "CM",
-      matricNo: "A20EC4045",
-      cgpa: 2.57,
-    },
-    {
-      id: 7,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "CM",
-      matricNo: "A20EC4046",
-      cgpa: 3.98,
-    },
-    {
-      id: 8,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "S",
-      matricNo: "A20EC4047",
-      cgpa: 3.87,
-    },
-    {
-      id: 9,
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      userType: "S",
-      matricNo: "A20EC4048",
-      cgpa: 3.77,
     },
   ];
 
