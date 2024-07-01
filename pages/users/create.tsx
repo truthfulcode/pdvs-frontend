@@ -4,14 +4,16 @@ import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
 import { useBalance } from "wagmi";
 import { Box, Tooltip } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { isAddress } from "viem";
 import { User } from "@/utils/types";
 import { UserType } from "@prisma/client";
-import { performBriefPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
 import { ADDRESSES } from "@/utils/constants";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/router";
+import { GlobalContext } from "../_app";
 
 type VariableState = {
   value: string;
@@ -35,7 +37,9 @@ type VarKeys = {
 
 export default function Home() {
   const { data: balance } = useBalance({ address: ADDRESSES.keeper });
+  const [canSubmit, setCanSubmit] = useState(false)
   const { isAuth } = useAuth();
+  const openSnackBar = useContext(GlobalContext)
 
   const [data, setData] = useState<VarKeys>({
     address: defaultValue,
@@ -52,28 +56,32 @@ export default function Home() {
     e.preventDefault();
   };
 
-  const handleChange = (e: any) => {
+  console.log("data", data)
+
+  const handleChange = useCallback((e: any) => {
     const { name, value } = e.target;
     let validation = false;
     let errorMsg: string | undefined = undefined;
+
     switch (name) {
       case "address":
-        validation = isAddress(value); // TODO
+        validation = isAddress(value);
         if (!validation) errorMsg = "Invalid address!";
         break;
       case "fullName":
-        validation = true;
+        validation = (value as string).length > 0;
+        if (!validation) errorMsg = "Empty full name!";
         break;
       case "matricNumber":
-        validation = true; // TODO
-        // if () errorMsg = "" ;
+        validation = (value as string).length > 0;
+        if (!validation) errorMsg = "Empty matric number!";
         break;
       case "cgpa":
-        validation = true; // TODO
-        // if () errorMsg = "" ;
+        validation = value && value !== "" && (value >= 0 && value <= 4);
+        if (!validation) errorMsg = "Invalid cgpa";
         break;
       case "userType":
-        validation = userTypes.includes(value); // TODO
+        validation = userTypes.includes(value);
         if (!validation) errorMsg = "Invalid UserType";
         break;
       default:
@@ -88,13 +96,16 @@ export default function Home() {
         errorMsg,
       } as VariableState,
     }));
-  };
+  }, []);
 
-  // Destructure data
-  const { ...allData } = data;
+  useEffect(() => {
+    const isValid = Object.values(data).every(
+      (field) => field.value !== "" && field.errorMsg === undefined
+    );
+    setCanSubmit(isValid);
+  }, [data]);
 
-  // Disable submit button until all fields are filled in
-  const canSubmit = [...Object.values(allData)].every((v) => !v.errorMsg);
+  const router = useRouter();
 
   async function submit() {
     const userObj: User = {
@@ -105,10 +116,17 @@ export default function Home() {
       matricNumber: data.matricNumber.value,
     };
 
-    await performBriefPOST(
+    await performPOST(
       "/api/users/create",
       JSON.stringify(userObj),
-      "create user"
+      (res: any) => {
+        router.push("/users/");
+        openSnackBar("User added!", "success")
+      },
+      (err: any) => {
+        const { message } = err;
+        openSnackBar(message, "error")
+      }
     );
   }
   return (
@@ -121,10 +139,33 @@ export default function Home() {
               Create New User{" "}
             </h1>
             <form method="POST" onSubmit={handleRegistration}>
+              <label className="text-gray-700 font-bold flex justify-center">
+                Keeper:
+              </label>
               <div className="mb-4 flex justify-between">
                 <Tooltip title="Keeper is the address used to register users in the server">
                   <label className="text-gray-700 font-bold">
-                    Keeper Balance:
+                    Address
+                  </label>
+                </Tooltip>
+                <button onClick={() => {
+                  navigator.clipboard.writeText(ADDRESSES.keeper);
+                }} type="button" className="js-clipboard-example p-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800" data-clipboard-target="#hs-clipboard-basic" data-clipboard-action="copy" data-clipboard-success-text="Copied">
+                  <svg className="js-clipboard-default size-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  </svg>
+
+                  <svg className="js-clipboard-success hidden size-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <div className="mb-4 flex justify-between">
+                <Tooltip title="Keeper is the address used to register users in the server">
+                  <label className="text-gray-700 font-bold">
+                    Balance
                   </label>
                 </Tooltip>
                 <label className="text-gray-700 font-bold">
@@ -132,19 +173,26 @@ export default function Home() {
                 </label>
               </div>
 
+
+              <label className="text-gray-700 font-bold flex justify-center">
+                User Info:
+              </label>
+
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Full Name
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-white leading-tight focus:outline-none focus:shadow-outline"
                   id="fullName"
                   name="fullName"
                   type="text"
                   placeholder="..."
                   value={data.fullName.value}
                 />
+                {data.fullName.errorMsg && <p className="text-sm text-red-500 ">{data.fullName.errorMsg}</p>}
+
               </div>
 
               <div className="mb-4">
@@ -153,13 +201,14 @@ export default function Home() {
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-white leading-tight focus:outline-none focus:shadow-outline"
                   id="address"
                   name="address"
                   type="text"
                   placeholder="0x..."
                   value={data.address.value}
                 />
+                {data.address.errorMsg && <p className="text-sm text-red-500 ">{data.address.errorMsg}</p>}
               </div>
 
               <div className="mb-4">
@@ -168,13 +217,14 @@ export default function Home() {
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-white leading-tight focus:outline-none focus:shadow-outline"
                   id="matricNumber"
                   name="matricNumber"
                   type="text"
                   placeholder="A23..."
                   value={data.matricNumber.value}
                 />
+                {data.matricNumber.errorMsg && <p className="text-sm text-red-500 ">{data.matricNumber.errorMsg}</p>}
               </div>
 
               <div className="max-w-lg w-58 mx-auto mb-4">
@@ -182,7 +232,7 @@ export default function Home() {
                   htmlFor="number-input"
                   className="block text-gray-700 text-sm font-bold mb-2"
                 >
-                  Enter CGPA:
+                  Enter CGPA
                 </label>
                 <input
                   type="number"
@@ -192,7 +242,7 @@ export default function Home() {
                   step="0.01"
                   defaultValue="2.00"
                   aria-describedby="helper-text-explanation"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-white text-black border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="3.89"
                   name="cgpa"
                   required
@@ -216,6 +266,7 @@ export default function Home() {
                     }));
                   }}
                 />
+                {data.cgpa.errorMsg && <p className="text-sm text-red-500 ">{data.cgpa.errorMsg}</p>}
               </div>
 
               <div className="mb-4 w-52">
@@ -271,9 +322,9 @@ export default function Home() {
                 disabled={!canSubmit}
                 type="submit"
                 onClick={submit}
-                className="btn btn-wide"
+                className="btn disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
               >
-                Register
+                REGISTER
               </button>
             </form>
           </>

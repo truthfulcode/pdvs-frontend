@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -22,6 +22,7 @@ import { useAccount } from "wagmi";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
+import { TimeDisplay } from "@/components/styledElements";
 
 export const getServerSideProps = async () => {
   const proposals = await getProposals();
@@ -55,7 +56,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
     <main>
       <NavBar />
       <Box className={styles.main}>
-        {userType === "ADMIN" && (
+        {isAdminOrCM && (
           <Box
             sx={{
               width: "640px",
@@ -124,7 +125,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                       >
                         <VisibilityIcon />
                       </IconButton>
-                      {isConnected && isAdminOrCM && p.status === "Draft" && (
+                      {isConnected && isAdminOrCM && ["Draft", "Active"].includes(p.status) && (
                         <IconButton
                           href={"/proposals/edit/" + p.id}
                           target="blank"
@@ -171,20 +172,11 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                         : p.content}
                     </Typography>
                   </Box>
-
-                  <Typography
-                    sx={{
-                      background: "gray",
-                      color: "white",
-                      width: "100px",
-                      textAlign: "center",
-                      borderRadius: 4,
-                    }}
-                    // sx={{ position: "absolute", bottom: 0, right: 0, p: 2 }}
+                  <TimeDisplay
                     variant="body2"
                   >
                     {formatTime(new Date(p.createdAt))}
-                  </Typography>
+                  </TimeDisplay>
                 </Box>
               </ListItem>
             ) : (

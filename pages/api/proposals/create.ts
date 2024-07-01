@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
 import { createProposal } from "../../../prisma/operations/proposals/create";
-import { isUserAdmin } from "../../../prisma/operations/users/read";
+import { isUserAdmin, isUserAdminOrCM } from "../../../prisma/operations/users/read";
 
 export default function handler(
   req: NextApiRequest,
@@ -22,7 +22,7 @@ export default function handler(
       );
 
       if (session) {
-        const _isUserAdmin = await isUserAdmin(session.address);
+        const _isUserAdmin = await isUserAdminOrCM(session.address);
         if (_isUserAdmin) {
           const result = await createProposal({ title, content });
 

@@ -33,6 +33,7 @@ import { CustomComment } from "@/utils/types";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
+import { PrimaryButton, TimeDisplay } from "./styledElements";
 
 declare var window: any;
 
@@ -146,9 +147,10 @@ const ProposalDisplay = ({
 
     return (
       <>
-        <Box sx={{ border: "black solid 3px", borderRadius: 3, p: 2, mb: 2, 
+        <Box sx={{
+          border: "black solid 3px", borderRadius: 3, p: 2, mb: 2,
           minWidth: "75%"
-         }}>
+        }}>
           <Box
             sx={{
               display: "flex",
@@ -193,38 +195,32 @@ const ProposalDisplay = ({
             </Box>
           </Box>
           {!!proposal.blockNumberSnapshot && (
-            <Typography mb={2} variant="subtitle2">
-              Block Snapshot at{" "}
+            <Typography mb={2} fontWeight="bold" variant="subtitle2">
               <Link
+                target="_blank"
                 href={
                   "https://testnet.bscscan.com/block/" +
                   Number(proposal.blockNumberSnapshot)
                 }
               >
+                Snapshot Block:{" "}
                 {Number(proposal.blockNumberSnapshot)}
               </Link>
+
             </Typography>
           )}
           <Typography mb={2} variant="body2">
             {proposal.content}
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography mb={2} variant="body2">
+            <TimeDisplay height={22} variant="body2">
               {formatTime(new Date(proposal.createdAt))}
-            </Typography>
+            </TimeDisplay>
             <Box>
               {proposal.status === "Published" && (
-                <Button
-                  sx={{
-                    color: "black",
-                    border: "3px black solid",
-                    borderRadius: 2,
-                    mr: 0.5,
-                  }}
+                <PrimaryButton sx={{ mr: 0.5 }}
                   href={"/proposals/vote/" + proposal.id}
-                >
-                  Vote
-                </Button>
+                >VOTE</PrimaryButton>
               )}
               {isAuth && isAdminOrCM && (
                 <Button
@@ -332,128 +328,132 @@ const ProposalDisplay = ({
                 }}
               />
             )}
-            <Typography>Comments</Typography>
-            <List>
-              {comments.map((c, i) => (
-                <ListItem
-                  sx={{ border: "3px black solid", borderRadius: 3, mb: 2 }}
-                  key={i}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: 600,
-                      minHeight: 150,
-                    }}
+            <Typography pl={1} mb={2}>{comments.length} Comments</Typography>
+            <Box sx={{
+              borderColor: "black", borderWidth: comments.length === 0 ? 2 : 0, borderRadius: 3, p: 1, minWidth: 600
+            }}>
+              <List>
+                {comments.map((c, i) => (
+                  <ListItem
+                    sx={{ border: "3px black solid", borderRadius: 3, mb: comments.length > i + 1 ? 2 : 0 }}
+                    key={i}
                   >
                     <Box
                       sx={{
                         display: "flex",
-                        alignItems: "center",
-                        flexDirection: "row",
+                        flexDirection: "column",
+                        width: 600,
+                        minHeight: 150,
                       }}
                     >
-                      <Typography variant="h6">{c.username}</Typography>
-                      <Typography
-                        variant="subtitle2"
-                        ml={1}
+                      <Box
                         sx={{
-                          background: () => {
-                            return getUserTypeColor(c.userType);
-                          },
-                          borderRadius: 3,
-                          p: "2px 4px",
-                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          flexDirection: "row",
                         }}
                       >
-                        {c.userType}
-                      </Typography>
-                    </Box>
-                    {c.id !== commentIdEditing ? (
+                        <Typography variant="h6">{c.username}</Typography>
+                        <Typography
+                          variant="subtitle2"
+                          ml={1}
+                          sx={{
+                            background: () => {
+                              return getUserTypeColor(c.userType);
+                            },
+                            borderRadius: 3,
+                            p: "2px 4px",
+                            color: "white",
+                          }}
+                        >
+                          {c.userType}
+                        </Typography>
+                      </Box>
+                      {c.id !== commentIdEditing ? (
+                        <Typography
+                          sx={{ display: "inline-flex", p: 1 }}
+                          variant="body2"
+                        >
+                          {c.content}
+                        </Typography>
+                      ) : (
+                        <TextField
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  onClick={() => {
+                                    saveSubmit();
+                                    setCommentIdEditing("");
+                                    setCommentContentEditing("");
+                                  }}
+                                >
+                                  <SaveAsIcon />
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }}
+                          sx={{
+                            mt: 2,
+                            width: "auto",
+                            mb: 2,
+                          }}
+                          multiline
+                          id="outlined-basic"
+                          label="Comment"
+                          variant="outlined"
+                          value={commentContentEditing}
+                          onChange={(e) => {
+                            setCommentContentEditing(e.target.value);
+                          }}
+                        />
+                      )}
                       <Typography
-                        sx={{ display: "inline-flex", p: 1 }}
+                        sx={{ position: "absolute", bottom: 0, right: 0, p: 2 }}
                         variant="body2"
                       >
-                        {c.content}
+                        {formatTime(new Date(c.createdAt))}
                       </Typography>
-                    ) : (
-                      <TextField
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                onClick={() => {
-                                  saveSubmit();
-                                  setCommentIdEditing("");
-                                  setCommentContentEditing("");
-                                }}
-                              >
-                                <SaveAsIcon />
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                        sx={{
-                          mt: 2,
-                          width: "auto",
-                          mb: 2,
-                        }}
-                        multiline
-                        id="outlined-basic"
-                        label="Comment"
-                        variant="outlined"
-                        value={commentContentEditing}
-                        onChange={(e) => {
-                          setCommentContentEditing(e.target.value);
-                        }}
-                      />
-                    )}
-                    <Typography
-                      sx={{ position: "absolute", bottom: 0, right: 0, p: 2 }}
-                      variant="body2"
-                    >
-                      {formatTime(new Date(c.createdAt))}
-                    </Typography>
 
-                    <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
-                      {/* Actions */}
-                      {c.isEditable && isEditable(c.createdAt) && (
-                        <IconButton
-                          onClick={() => {
-                            setCommentIdEditing(c.id);
-                            setCommentContentEditing(c.content);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      )}
-                      {isAdmin && (
-                        <IconButton
-                          disableRipple
-                          onClick={async () => {
-                            const obj = { commentId: c.id };
-                            await performPOST(
-                              "/api/comments/delete",
-                              JSON.stringify(obj),
-                              (res: any) => {
-                                console.log("delete comment res:", res);
-                                location.reload();
-                              },
-                              (err: any) => {
-                                console.log("delete comment err:", err);
-                              }
-                            );
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
+                      <Box sx={{ position: "absolute", top: 0, right: 0, p: 2 }}>
+                        {/* Actions */}
+                        {c.isEditable && isEditable(c.createdAt) && (
+                          <IconButton
+                            onClick={() => {
+                              setCommentIdEditing(c.id);
+                              setCommentContentEditing(c.content);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                        {isAdmin && (
+                          <IconButton
+                            disableRipple
+                            onClick={async () => {
+                              const obj = { commentId: c.id };
+                              await performPOST(
+                                "/api/comments/delete",
+                                JSON.stringify(obj),
+                                (res: any) => {
+                                  console.log("delete comment res:", res);
+                                  location.reload();
+                                },
+                                (err: any) => {
+                                  console.log("delete comment err:", err);
+                                }
+                              );
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-                </ListItem>
-              ))}
-            </List>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Box>
         )}
       </>

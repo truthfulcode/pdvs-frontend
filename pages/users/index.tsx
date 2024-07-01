@@ -6,14 +6,15 @@ import { Box, Button } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSession } from "next-auth/react";
-import { performBriefPOST } from "@/utils/httpRequest";
-import { getListings } from "../../prisma/operations/users/read";
-import { useState } from "react";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
+import { useContext, useState } from "react";
 import RestrictedPage from "@/components/RestrictedPage";
+import { getUsers } from "../../prisma/operations/users/read";
+import { GlobalContext } from "../_app";
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
-  let listings = await getListings(1);
+  let listings = await getUsers();
 
   if (listings) {
     listings = listings.map((l) => {
@@ -28,6 +29,7 @@ export const getServerSideProps = async () => {
 export default function Home({ listings }: { listings: any }) {
   const { data: session, status } = useSession();
   const [deleteId, setDeleteId] = useState("");
+  const openSnackBar = useContext(GlobalContext)
 
   // TODO revoke authentication access upon user removal
   const Modal = () => {
@@ -59,10 +61,17 @@ export default function Home({ listings }: { listings: any }) {
   };
 
   async function submit(userId: string) {
-    await performBriefPOST(
+    await performPOST(
       "/api/users/delete",
       JSON.stringify({ userId }),
-      "remove user"
+      (res: any) => {
+        openSnackBar("User deleted!", "success");
+        location.reload();
+      },
+      (err: any) => {
+        const { message } = err;
+        openSnackBar(message, "error");
+      }
     );
   }
 

@@ -29,12 +29,17 @@ export default function handler(
 
         if (_isUserAdmin) {
           const castedCgpa = Number((cgpa * 100).toFixed(0));
+          let simulation;
 
-          const simulation = await vt.simulate("adjust", [
-            userAddress,
-            castedCgpa,
-            userType === "CM" ? 2 : 1,
-          ]);
+          try {
+            simulation = await vt.simulate("adjust", [
+              userAddress,
+              castedCgpa,
+              userType === "CM" ? 2 : 1,
+            ]);
+          } catch {
+            return res.status(401).json({message: "Failed to broadcast mint user cgpa to the blockchain"})
+          }
 
           const result = await createUser({
             userType,
@@ -44,7 +49,7 @@ export default function handler(
             fullName,
           });
 
-          await vt.execute(simulation.request);
+          await vt.execute(simulation?.request);
 
           return res.status(200).json({ message: "success" });
         } else {

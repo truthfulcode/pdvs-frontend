@@ -4,8 +4,9 @@
 
 html,
 body {
-  /* background-color: rgba(10,10,10,0); */
+  background-color: rgba(10,10,10,0);
   background-color: white;
   max-width: 100vw;
   overflow-x: hidden;
+  height: 100vh;
 }

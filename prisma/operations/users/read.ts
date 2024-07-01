@@ -9,6 +9,19 @@ export async function getUserById(id: string) {
   return result ?? null;
 }
 
+export async function isUserAdminOrCM(addr: string) {
+  const res = await prisma.user.findFirst({
+    where: {
+      userType: {
+        in: ["ADMIN", "CM"]
+      },
+      userAddress: addr,
+    },
+  });
+
+  return !!res;
+}
+
 export async function isUserAdmin(addr: string) {
   const res = await prisma.user.findFirst({
     where: {
@@ -29,14 +42,18 @@ export async function getUserByAddress(userAddress: string) {
   return result ?? null;
 }
 
-export async function getListings(page: number) {
-  if (page < 1) throw Error("Invalid page!");
+export async function getUsers() {
   const result = await prisma.user.findMany({
-    take: 4,
-    skip: page == 1 ? 0 : (page - 1) * 4,
     orderBy: {
       id: "asc",
     },
+    where: {
+      userType :{
+        not:{
+          equals: "ADMIN"
+        }
+      }
+    }
   });
   return result ?? null;
 }

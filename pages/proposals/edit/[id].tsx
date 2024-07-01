@@ -15,7 +15,7 @@ import { getProposalById } from "../../../prisma/operations/proposals/read";
 import RestrictedPage from "@/components/RestrictedPage";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
-import { isValidObjectId } from "@/utils/utils";
+import { isValidObjectId, stringify } from "@/utils/utils";
 
 export const getServerSideProps = async (ctx: any) => {
   const { params, req, res } = ctx;
@@ -38,8 +38,9 @@ export const getServerSideProps = async (ctx: any) => {
     }
   }
 
+  console.log("p", proposal)
   // Pass data to the page via props
-  return { props: { _proposal: JSON.stringify(proposal), isLiked } };
+  return { props: { _proposal: stringify(proposal as Object), isLiked } };
 };
 
 type VariableState = {

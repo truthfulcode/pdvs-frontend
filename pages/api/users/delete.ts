@@ -10,6 +10,7 @@ import {
   isUserAdmin,
 } from "../../../prisma/operations/users/read";
 import { account } from "@/utils/restrictedUtils";
+import { AdminVotingToken } from "@/AdminVotingToken";
 
 export default function handler(
   req: NextApiRequest,
@@ -17,6 +18,9 @@ export default function handler(
     message: string;
   }>
 ) {
+
+  const vt = new AdminVotingToken();
+
   const { method, body } = req;
   const { userId } = body;
 
@@ -35,16 +39,24 @@ export default function handler(
           const user = await getUserById(userId);
 
           if (user) {
+            let simulation;
             // braodcast the transaction to the blockchain
-            const { request, result: output } = await client.simulateContract({
-              account: account,
-              abi: votingTokenAbi.abi,
-              address: ADDRESSES.tokenAddress,
-              functionName: "revoke",
-              args: [user.userAddress],
-            });
+            try {
+              simulation = await client.simulateContract({
+                account: account,
+                abi: votingTokenAbi.abi,
+                address: ADDRESSES.tokenAddress,
+                functionName: "revoke",
+                args: [user.userAddress],
+              });
+            } catch (err) {
+              return res.status(401).json({message: "Failed to broadcast revoke user cgpa to the blockchain"})
+            }
 
             const result = await deleteUser(userId);
+
+          await vt.execute(simulation?.request);
+
           }
 
           return res.status(200).json({ message: "success" });

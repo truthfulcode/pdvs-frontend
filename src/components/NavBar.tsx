@@ -2,14 +2,16 @@
 
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import * as React from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 
 export default function NavBar() {
   const { isConnected } = useAccount();
+  const { error } = useConnect()
   const { userType, fullName } = useUser();
 
+  React.useEffect(() => { console.log("error", error) }, [error])
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -36,26 +38,30 @@ export default function NavBar() {
               className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
               {userType === "ADMIN" && (
-                <li>
-                  <Link href="/users">Users</Link>
+                <li className="text-white">
+                  <Link href="/users">
+                    Users
+                  </Link>
                 </li>
               )}
-              <li>
-                <Link href="/proposals">Proposals</Link>
+              <li className="text-white">
+                <Link href="/proposals">
+                  Proposals
+                </Link>
               </li>
             </ul>
           )}
         </div>
-        <a className="btn btn-ghost text-xl">PDVS</a>
+        <a className="btn btn-ghost text-xl text-white">PDVS</a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           {userType === "ADMIN" && (
-            <li>
+            <li className="text-white">
               <Link href="/users">Users</Link>
             </li>
           )}
-          <li>
+          <li className="text-white">
             <Link href="/proposals">Proposals</Link>
           </li>
         </ul>

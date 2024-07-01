@@ -83,14 +83,12 @@ export async function updateProposal(
   proposalId: string,
   { title, content }: Proposal
 ) {
-  //
-
   const p = await getProposalById(proposalId);
 
   if (!p) throw Error("Proposal doesn't exist!");
-  else if (p.status !== "Draft") throw Error("Cannot edit non draft proposal!");
+  else if (!["Draft", "Active"].includes(p.status)) throw Error("Cannot edit non draft or active proposal!");
 
-  return await prisma.proposal.update({
+return await prisma.proposal.update({
     where: {
       id: proposalId,
     },

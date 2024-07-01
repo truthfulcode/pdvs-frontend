@@ -4,10 +4,10 @@ import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
 import { useAccount } from "wagmi";
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Proposal } from "@/utils/types";
-import { performBriefPOST } from "@/utils/httpRequest";
+import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
 import { useRouter } from "next/router";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,6 +36,7 @@ export default function Home() {
   const { address } = useAccount();
   const { data: sessionData, status, update } = useSession();
   const { isAuth } = useAuth();
+  const [canSubmit, setCanSubmit] = useState(false)
   const [data, setData] = useState<VarKeys>({
     title: defaultValue,
     content: defaultValue,
@@ -45,16 +46,19 @@ export default function Home() {
     e.preventDefault();
   };
 
-  const handleChange = (e: any) => {
+  const handleChange = useCallback((e: any) => {
+
     const { name, value } = e.target;
     let validation = false;
-    const errorMsg: string | undefined = undefined;
+    let errorMsg: string | undefined = undefined;
     switch (name) {
       case "title":
-        validation = true;
+        validation = (value as string).length > 0;
+        if (!validation) errorMsg = "Empty title!";
         break;
       case "content":
-        validation = true;
+        validation = (value as string).length > 0;
+        if (!validation) errorMsg = "Empty content!";
         break;
       default:
         validation = false;
@@ -68,13 +72,14 @@ export default function Home() {
         errorMsg,
       } as VariableState,
     }));
-  };
+  }, []);
 
-  // Destructure data
-  const { ...allData } = data;
-
-  // Disable submit button until all fields are filled in
-  const canSubmit = [...Object.values(allData)].every((v) => !v.errorMsg);
+  useEffect(() => {
+    const isValid = Object.values(data).every(
+      (field) => field.value !== "" && field.errorMsg === undefined
+    );
+    setCanSubmit(isValid);
+  }, [data]);
 
   const router = useRouter();
 
@@ -84,12 +89,17 @@ export default function Home() {
       title: data.title.value,
     };
 
-    await performBriefPOST(
+    await performPOST(
       "/api/proposals/create",
       JSON.stringify(obj),
-      "create proposal"
+      (res: any) => {
+        console.log("create proposal res:", res);
+        router.push("/proposals/");
+      },
+      (err: any) => {
+        console.log("create proposal err:", err);
+      }
     );
-    router.push("/proposals/");
   }
 
   return (
@@ -108,13 +118,14 @@ export default function Home() {
                 </label>
                 <input
                   onChange={handleChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-black bg-white leading-tight focus:outline-none focus:shadow-outline"
                   id="title"
                   name="title"
                   type="text"
                   placeholder="..."
                   value={data.title.value}
                 />
+                {data.title.errorMsg && <p className="text-sm text-red-500 ">{data.title.errorMsg}</p>}
               </div>
 
               <div>
@@ -123,21 +134,21 @@ export default function Home() {
                 </label>
                 <textarea
                   onChange={handleChange}
-                  // style={{width:'80%'}}
                   rows={4}
-                  className="block mb-4 p-2.5 w-full text-sm text-white bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="block mb-4 p-2.5 w-full text-sm text-black bg-white rounded-lg border border-gray-300"
                   id="content"
                   name="content"
                   placeholder="Write your proposal here..."
                   value={data.content.value}
                 ></textarea>
+                {data.content.errorMsg && <p className="text-sm text-red-500 ">{data.content.errorMsg}</p>}
               </div>
               <div className="flex justify-center">
                 <button
                   disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
-                  className="btn btn-wide text-white"
+                  className="btn disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
                 >
                   CREATE
                 </button>

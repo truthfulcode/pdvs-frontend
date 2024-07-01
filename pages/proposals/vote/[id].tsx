@@ -12,12 +12,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import { getUserByAddress } from "../../../prisma/operations/users/read";
 import { getProposalById } from "../../../prisma/operations/proposals/read";
-import ProposalDisplay from "@/components/ProposalDisplay";
 import { useAccount } from "wagmi";
 import { SnapshotVoting } from "@/snapshot/SnapshotVoting";
 import { Hex } from "viem";
 import { CustomLoading } from "@/components/Loading";
 import RestrictedPage from "@/components/RestrictedPage";
+import ProposalDisplay from "@/components/ProposalDisplay";
 
 declare var window: any;
 
@@ -279,8 +279,9 @@ export default function Proposals({
                           );
                           console.log("res vote", res);
                         };
-                        query();
-                        // location.reload();
+                        query().then(()=>{
+                          location.reload();
+                        });
                       } catch (e) {
                         console.log("err vote", e);
                       }
