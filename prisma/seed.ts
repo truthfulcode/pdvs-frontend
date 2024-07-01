@@ -9,29 +9,29 @@ async function main() {
   const proposals = await prisma.proposal.createMany({
     data: [
       {
-        title: "P1: Propose new comittee members",
-        content: filler,
+        title: "P1: Increase Funding for School of Computing Hackathons",
+        content: "This proposal seeks to allocate additional funding from the PERSAKA budget to support the organization and execution of School of Computing hackathons. The aim is to encourage more student participation, foster innovation, and provide opportunities for students to develop their skills in a practical, collaborative environment.",
         createdAt: new Date(),
         likesCount: 0,
         status: "Draft",
       },
       {
-        title: "P2: Review platform policies",
-        content: filler,
+        title: "P2: Establish a School of Computing Mentorship Program",
+        content: "This proposal proposes the establishment of a formalized mentorship program within the School of Computing. This program would pair senior students with their junior counterparts, providing guidance on academic pursuits, career exploration, and navigating university life. The goal is to foster a strong sense of community and support for students across all academic levels.",
         createdAt: new Date(),
         likesCount: 0,
         status: "Draft",
       },
       {
-        title: "P3: Change voting power strategy",
-        content: filler,
+        title: "P3: Improve School of Computing Career Resources and Networking Opportunities",
+        content: "This proposal aims to enhance the School of Computing's career resources and networking opportunities for students. This includes expanding partnerships with industry professionals, organizing career fairs and workshops, and providing more robust online resources for career exploration and job searching. The goal is to better prepare students for successful careers in the field of computer science.",
         createdAt: new Date(),
         likesCount: 0,
         status: "Draft",
       },
       {
-        title: "P4: Add new comittee members",
-        content: filler,
+        title: "P4: Expand the Use of Online Learning Platforms and Resources in School of Computing Courses",
+        content: "This proposal advocates for the expanded use of online learning platforms and resources within School of Computing courses. This would involve leveraging existing platforms or exploring new ones to provide supplementary learning materials, interactive exercises, and online discussion forums. The goal is to enhance the learning experience, cater to diverse learning styles, and increase flexibility for students.",
         createdAt: new Date(),
         likesCount: 0,
         status: "Draft",
