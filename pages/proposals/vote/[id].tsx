@@ -287,14 +287,6 @@ export default function Proposals({
                       } catch (e) {
                         console.log("err vote", e);
                       }
-                      // snap.propose({
-                      //   title: "Proposal 1: elect new members",
-                      //   body: "Lorem ipsum dolor sit amet, sea mazim insolens ei, vis sint volumus ullamcorper ex. Quo ne alienum eligendi similique. Amet alii pri et. Prima quaestio eleifend at pri, blandit perfecto menandri cu est. Cu cum nihil consetetur, consul mucius et eum, tibique adipisci ad pro. Erant doctus efficiendi et quo.",
-                      //   account: "0x17fBA9Eb71F040d57d19B48A28002FfE32380DF8",
-                      //   startTime: 1717073435,
-                      //   snapshotBlockHeight: 6006496,
-                      //   discussionLink: "https://www.google.com/",
-                      // });
                     }}
                     disabled={(() => {
                       if (!graphProposal || !proposal) return true;
