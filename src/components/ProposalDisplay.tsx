@@ -273,7 +273,7 @@ const ProposalDisplay = ({
                             account: address as string,
                             startTime: Math.floor(Number(c.timestamp) + 60),
                             snapshotBlockHeight: Number(c.number),
-                            discussionLink: "https://www.google.com/",
+                            discussionLink: "https://pdvs.netlify.app/proposals/view/" + proposal.id,
                           });
 
                           obj.action = "publish";
