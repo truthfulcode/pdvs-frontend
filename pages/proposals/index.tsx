@@ -22,7 +22,7 @@ import { useAccount } from "wagmi";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
-import { TimeDisplay } from "@/components/styledElements";
+import { PrimaryButton, TimeDisplay } from "@/components/styledElements";
 
 export const getServerSideProps = async () => {
   const proposals = await getProposals();
@@ -64,17 +64,11 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
               justifyContent: "flex-end",
             }}
           >
-            <Button
-              sx={{
-                color: "black",
-                border: "2px black solid",
-                borderRadius: 2,
-                mb: 1,
-              }}
+            <PrimaryButton
               href="/proposals/create"
             >
               Create Proposal
-            </Button>
+            </PrimaryButton>
           </Box>
         )}
         <TextField
@@ -97,6 +91,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                   borderRadius: 3,
                   mb: 2,
                   pb: 2,
+                  background: "#47D2FF11"
                 }}
                 key={i}
               >

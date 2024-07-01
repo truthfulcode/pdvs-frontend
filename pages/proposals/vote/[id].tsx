@@ -18,6 +18,7 @@ import { Hex } from "viem";
 import { CustomLoading } from "@/components/Loading";
 import RestrictedPage from "@/components/RestrictedPage";
 import ProposalDisplay from "@/components/ProposalDisplay";
+import { useAuth } from "@/hooks/useAuth";
 
 declare var window: any;
 
@@ -77,6 +78,7 @@ export default function Proposals({
 }) {
   const snap = new SnapshotGraphQL();
   const { address } = useAccount();
+  const { isAuth } = useAuth()
   const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
   const [graphProposal, setGraphProposal] = useState<GraphProposal>();
   const [graphVote, setGraphVote] = useState<GraphVote>();
@@ -229,11 +231,11 @@ export default function Proposals({
                           !graphProposal || graphProposal?.scores_total === 0
                             ? 0
                             : Number(
-                                (
-                                  (100 * graphProposal?.scores[i]) /
-                                  graphProposal?.scores_total
-                                ).toFixed(2)
-                              )
+                              (
+                                (100 * graphProposal?.scores[i]) /
+                                graphProposal?.scores_total
+                              ).toFixed(2)
+                            )
                         }
                       />
                     ))}
@@ -279,7 +281,7 @@ export default function Proposals({
                           );
                           console.log("res vote", res);
                         };
-                        query().then(()=>{
+                        query().then(() => {
                           location.reload();
                         });
                       } catch (e) {
@@ -302,7 +304,7 @@ export default function Proposals({
                         now < graphProposal?.start ||
                         now > graphProposal?.end
                       );
-                    })()}
+                    })() || !isAuth}
                     sx={{
                       mt: 1,
                       border: "3px black solid",

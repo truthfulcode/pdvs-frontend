@@ -11,6 +11,7 @@ import { useContext, useState } from "react";
 import RestrictedPage from "@/components/RestrictedPage";
 import { getUsers } from "../../prisma/operations/users/read";
 import { GlobalContext } from "../_app";
+import { PrimaryButton } from "@/components/styledElements";
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
@@ -202,17 +203,9 @@ export default function Home({ listings }: { listings: any }) {
               justifyContent: "flex-end",
             }}
           >
-            <Button
-              sx={{
-                color: "black",
-                border: "2px black solid",
-                borderRadius: 2,
-                mb: 1,
-              }}
-              href="/users/create"
-            >
+            <PrimaryButton sx={{ mb: 1 }} href="/users/create">
               Create User
-            </Button>
+            </PrimaryButton>
           </Box>
           <Modal />
           {listings.length === 0 ? (

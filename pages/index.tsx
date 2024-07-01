@@ -15,7 +15,7 @@ export default function Home() {
           justifyContent: "space-between",
           alignItems: "center",
           p: "32px 96px",
-          m: 2,
+          m: 6,
           background: "#A7E6FF",
           borderRadius: 3,
         }}

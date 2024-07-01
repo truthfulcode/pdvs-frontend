@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -158,17 +159,49 @@ const ProposalDisplay = ({
               justifyContent: "space-between",
             }}
           >
-            <Typography mb={2} variant="h4">
+            <Typography mb={2} sx={{ fontWeight: "bold" }} variant="h4">
               {proposal.title}
             </Typography>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "flex-start",
-              }}
-            >
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              // alignItems: "flex-start",
+              alignContent: "space-between",
+              justifyContent: "space-between"
+            }}
+          >
+            <Box sx={{
+              // alignItems: "flex-end",
+              // justifyContent: "flex-end"
+            }}>
+              {!!proposal.blockNumberSnapshot && (
+                <Typography mb={2} fontWeight="bold" variant="subtitle2">
+                  <Tooltip title="Block number at which the voting power is effective">
+                    <Link
+                      target="_blank"
+                      href={
+                        "https://testnet.bscscan.com/block/" +
+                        Number(proposal.blockNumberSnapshot)
+                      }
+                    >
+                      Snapshot Block:{" "}
+                      {Number(proposal.blockNumberSnapshot)}
+                    </Link>
+
+                  </Tooltip>
+                </Typography>
+              )}
+            </Box>
+            <Box sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-start",
+              justifyContent: "flex-end"
+            }}>
               <Like />
 
               <IconButton
@@ -194,21 +227,6 @@ const ProposalDisplay = ({
               </Typography>
             </Box>
           </Box>
-          {!!proposal.blockNumberSnapshot && (
-            <Typography mb={2} fontWeight="bold" variant="subtitle2">
-              <Link
-                target="_blank"
-                href={
-                  "https://testnet.bscscan.com/block/" +
-                  Number(proposal.blockNumberSnapshot)
-                }
-              >
-                Snapshot Block:{" "}
-                {Number(proposal.blockNumberSnapshot)}
-              </Link>
-
-            </Typography>
-          )}
           <Typography mb={2} variant="body2">
             {proposal.content}
           </Typography>
@@ -223,25 +241,16 @@ const ProposalDisplay = ({
                 >VOTE</PrimaryButton>
               )}
               {isAuth && isAdminOrCM && (
-                <Button
-                  sx={{
-                    color: "black",
-                    border: "3px black solid",
-                    borderRadius: 2,
-                    mr: 0.5,
-                  }}
+                <PrimaryButton
+                  sx={{ mr: 0.5 }}
                   href={"/proposals/edit/" + proposal.id}
                 >
                   Edit
-                </Button>
+                </PrimaryButton>
+
               )}
               {isAdmin && proposal.status !== "Published" && (
-                <Button
-                  sx={{
-                    color: "black",
-                    border: "3px black solid",
-                    borderRadius: 2,
-                  }}
+                <PrimaryButton
                   onClick={() => {
                     async function submitButton() {
                       try {
@@ -293,7 +302,7 @@ const ProposalDisplay = ({
                   }}
                 >
                   {proposal.status === "Draft" ? "Activate" : "Publish"}
-                </Button>
+                </PrimaryButton>
               )}
             </Box>
           </Box>
