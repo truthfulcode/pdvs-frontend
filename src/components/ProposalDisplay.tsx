@@ -327,7 +327,7 @@ const ProposalDisplay = ({
                 }}
                 sx={{
                   mt: 2,
-                  width: isMobile ? undefined : "640px",
+                  width: isMobile ? "100%" : "640px",
                   mb: 2,
                 }}
                 multiline
