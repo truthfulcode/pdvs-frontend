@@ -135,7 +135,7 @@ export default function Proposals({
     <main>
       <NavBar />
       <Box
-        className={isMobile ? "" : styles.main}
+        className={isMobile ? "mx-12 my-8" : styles.main}
       >
         <Head>
           <title>Edit Proposal</title>
@@ -144,11 +144,11 @@ export default function Proposals({
 
         <RestrictedPage validAccess={isAuth as boolean}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-black md:text-4xl lg:text-5xl">
+            <h1 className="mb-16 text-4xl text-center font-extrabold leading-none tracking-tight text-black md:text-4xl lg:text-5xl">
               Edit Proposal{" "}
             </h1>
             <form
-              className="w-1/2"
+              // className="w-1/2"
               method="POST"
               onSubmit={(e) => {
                 e.preventDefault();
