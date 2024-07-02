@@ -12,7 +12,7 @@ import RestrictedPage from "@/components/RestrictedPage";
 import { getUsers } from "../../prisma/operations/users/read";
 import { GlobalContext } from "../_app";
 import { PrimaryButton } from "@/components/styledElements";
-import { isMobile } from 'react-device-detect';
+import { isBrowser, isMobile } from 'react-device-detect';
 import Head from "next/head";
 
 export const getServerSideProps = async () => {
@@ -141,6 +141,7 @@ export default function Home({ listings }: { listings: any }) {
         <RestrictedPage validAccess={!!session}>
           <Box
             sx={{
+              mt: isMobile ? 1 : undefined,
               width: isMobile ? undefined : "860px",
               display: "flex",
               justifyContent: isMobile ? "center" : "flex-end",
