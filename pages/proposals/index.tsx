@@ -70,7 +70,8 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
         {isAdminOrCM && (
           <Box
             sx={{
-              width: "640px",
+              mt: isMobile ? 2 : undefined,
+              width: isMobile ? undefined : "640px",
               display: "flex",
               justifyContent: "flex-end",
             }}

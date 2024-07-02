@@ -1,11 +1,15 @@
 // "use client";
 
 import NavBar from "@/components/NavBar";
+import { useUser } from "@/hooks/useUser";
 import { Box, Typography } from "@mui/material";
 import Head from "next/head";
 import Image from "next/image";
+import { isMobile } from "react-device-detect";
 
 export default function Home() {
+  const { userType, fullName } = useUser();
+
   return (
     <Box sx={{ height: "100vh" }}>
       <Head>
@@ -14,6 +18,18 @@ export default function Home() {
           "Welcome to the UTM PERSAKA Voting Platform, where School of Computing students can have a direct say in shaping the future of our community. Vote on proposals, discuss ideas, and make your voice heard!" />
       </Head>
       <NavBar />
+      {isMobile && userType !== "Admin" &&
+        (
+          <Box>
+            <Typography sx={{
+              fontWeight: "bold",
+              mt: 2,
+              textAlign: "center"
+            }}>Welcome {fullName}!</Typography>
+          </Box>
+
+        )
+      }
       <Box
         sx={{
           display: "flex",

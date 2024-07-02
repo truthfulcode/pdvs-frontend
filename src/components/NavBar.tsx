@@ -5,6 +5,7 @@ import * as React from "react";
 import { useAccount, useConnect } from "wagmi";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
+import { isBrowser } from "react-device-detect";
 
 export default function NavBar() {
   const { isConnected } = useAccount();
@@ -75,7 +76,7 @@ export default function NavBar() {
         </ul>
       </div>
       <div className="navbar-end">
-        {fullName !== "Admin" && (
+        {fullName !== "Admin" && isBrowser && (
           <p className="rounded-full bg-gray text-white text-xs">
             {fullName.toLocaleUpperCase()}
           </p>

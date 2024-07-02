@@ -19,7 +19,7 @@ import { CustomLoading } from "@/components/Loading";
 import RestrictedPage from "@/components/RestrictedPage";
 import ProposalDisplay from "@/components/ProposalDisplay";
 import { useAuth } from "@/hooks/useAuth";
-import { isMobile } from 'react-device-detect';
+import { isBrowser, isMobile } from 'react-device-detect';
 import Head from "next/head";
 
 declare var window: any;
@@ -194,7 +194,7 @@ export default function Proposals({
       >
         <RestrictedPage validAccess={!!proposal as boolean}>
           <CustomLoading active={loading}>
-            <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <Box sx={{ display: "flex", flexDirection: isBrowser ? "row" : "column" }}>
               <Box sx={{ flex: 3 }}>
                 <ProposalDisplay
                   isCommentEnabled={false}
