@@ -141,9 +141,9 @@ export default function Home({ listings }: { listings: any }) {
         <RestrictedPage validAccess={!!session}>
           <Box
             sx={{
-              width: "860px",
+              width: isMobile ? undefined : "860px",
               display: "flex",
-              justifyContent: "flex-end",
+              justifyContent: isMobile ? "center" : "flex-end",
             }}
           >
             <PrimaryButton sx={{ mb: 1 }} href="/users/create">
