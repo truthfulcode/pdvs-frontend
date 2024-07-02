@@ -11,6 +11,7 @@ import { performBriefPOST, performPOST } from "@/utils/httpRequest";
 import RestrictedPage from "@/components/RestrictedPage";
 import { useRouter } from "next/router";
 import { useAuth } from "@/hooks/useAuth";
+import { isMobile } from 'react-device-detect';
 
 const styling = {
   row: { display: "flex", flexDirection: "row" },
@@ -102,10 +103,14 @@ export default function Home() {
     );
   }
 
+
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
+
         <RestrictedPage validAccess={!!isAuth}>
           <>
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl ">

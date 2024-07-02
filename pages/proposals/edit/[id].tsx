@@ -16,6 +16,7 @@ import RestrictedPage from "@/components/RestrictedPage";
 import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { isValidObjectId, stringify } from "@/utils/utils";
+import { isMobile } from 'react-device-detect';
 
 export const getServerSideProps = async (ctx: any) => {
   const { params, req, res } = ctx;
@@ -132,7 +133,10 @@ export default function Proposals({
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
+
         <RestrictedPage validAccess={isAuth as boolean}>
           <>
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-black md:text-4xl lg:text-5xl">

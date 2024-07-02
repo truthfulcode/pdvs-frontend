@@ -14,6 +14,7 @@ import { ADDRESSES } from "@/utils/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
 import { GlobalContext } from "../_app";
+import { isMobile } from 'react-device-detect';
 
 type VariableState = {
   value: string;
@@ -132,7 +133,9 @@ export default function Home() {
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
         <RestrictedPage validAccess={!!isAuth}>
           <>
             <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl">

@@ -14,6 +14,7 @@ import { getProposalById } from "../../../prisma/operations/proposals/read";
 import { isValidObjectId, stringify } from "@/utils/utils";
 import { CustomComment } from "@/utils/types";
 import ProposalDisplay from "@/components/ProposalDisplay";
+import { isMobile } from 'react-device-detect';
 
 export const getServerSideProps = async (ctx: any) => {
   const { params, req, res } = ctx;
@@ -86,7 +87,9 @@ export default function Proposals({
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
         <ProposalDisplay
           isCommentEnabled
           comments={comments}

@@ -19,6 +19,7 @@ import { CustomLoading } from "@/components/Loading";
 import RestrictedPage from "@/components/RestrictedPage";
 import ProposalDisplay from "@/components/ProposalDisplay";
 import { useAuth } from "@/hooks/useAuth";
+import { isMobile } from 'react-device-detect';
 
 declare var window: any;
 
@@ -181,7 +182,10 @@ export default function Proposals({
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
         <RestrictedPage validAccess={!!proposal as boolean}>
           <CustomLoading active={loading}>
             <Box sx={{ display: "flex", flexDirection: "row" }}>

@@ -24,6 +24,7 @@ import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import { PrimaryButton, TimeDisplay } from "@/components/styledElements";
+import { isMobile } from 'react-device-detect';
 
 export const getServerSideProps = async () => {
   const proposals = await getProposals();
@@ -56,7 +57,9 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
   return (
     <main>
       <NavBar />
-      <Box className={styles.main}>
+      <Box
+        className={isMobile ? "" : styles.main}
+      >
         {isAdminOrCM && (
           <Box
             sx={{
