@@ -2,11 +2,17 @@
 
 import NavBar from "@/components/NavBar";
 import { Box, Typography } from "@mui/material";
+import Head from "next/head";
 import Image from "next/image";
 
 export default function Home() {
   return (
     <Box sx={{ height: "100vh" }}>
+      <Head>
+        <title>UTM PERSAKA Voting Platform: Your Voice Matters</title>
+        <meta name="description" content=
+          "Welcome to the UTM PERSAKA Voting Platform, where School of Computing students can have a direct say in shaping the future of our community. Vote on proposals, discuss ideas, and make your voice heard!" />
+      </Head>
       <NavBar />
       <Box
         sx={{

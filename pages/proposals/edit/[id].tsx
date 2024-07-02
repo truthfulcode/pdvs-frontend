@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { isValidObjectId, stringify } from "@/utils/utils";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 export const getServerSideProps = async (ctx: any) => {
   const { params, req, res } = ctx;
@@ -136,6 +137,10 @@ export default function Proposals({
       <Box
         className={isMobile ? "" : styles.main}
       >
+        <Head>
+          <title>Edit Proposal</title>
+          <meta name="description" content="Refine your proposal based on feedback from the community" />
+        </Head>
 
         <RestrictedPage validAccess={isAuth as boolean}>
           <>

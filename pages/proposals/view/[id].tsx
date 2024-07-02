@@ -15,6 +15,7 @@ import { isValidObjectId, stringify } from "@/utils/utils";
 import { CustomComment } from "@/utils/types";
 import ProposalDisplay from "@/components/ProposalDisplay";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 export const getServerSideProps = async (ctx: any) => {
   const { params, req, res } = ctx;
@@ -86,6 +87,10 @@ export default function Proposals({
 
   return (
     <main>
+      <Head>
+        <title>View Proposal</title>
+        <meta name="description" content="Review the details of a specific proposal, including the proposal content, and discussion comments." />
+      </Head>
       <NavBar />
       <Box
         className={isMobile ? "" : styles.main}

@@ -20,6 +20,7 @@ import RestrictedPage from "@/components/RestrictedPage";
 import ProposalDisplay from "@/components/ProposalDisplay";
 import { useAuth } from "@/hooks/useAuth";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 declare var window: any;
 
@@ -181,6 +182,11 @@ export default function Proposals({
 
   return (
     <main>
+      <Head>
+        <title>Proposal Voting</title>
+        <meta name="description" content="Review published proposals and cast your vote! Your voice matters in shaping the future of our School of Computing." />
+      </Head>
+
       <NavBar />
 
       <Box

@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/router";
 import { GlobalContext } from "../_app";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 type VariableState = {
   value: string;
@@ -130,8 +131,14 @@ export default function Home() {
       }
     );
   }
+
   return (
     <main>
+      <Head>
+        <title>Create User</title>
+        <meta name="description" content="Admin page, used to create new students proposals." />
+      </Head>
+
       <NavBar />
       <Box
         className={isMobile ? "" : styles.main}

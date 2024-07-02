@@ -12,6 +12,7 @@ import RestrictedPage from "@/components/RestrictedPage";
 import { useRouter } from "next/router";
 import { useAuth } from "@/hooks/useAuth";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 const styling = {
   row: { display: "flex", flexDirection: "row" },
@@ -106,6 +107,11 @@ export default function Home() {
 
   return (
     <main>
+      <Head>
+        <title>Create Proposal</title>
+        <meta name="description" content="Submit your idea to improve our School of Computing! Share it with the community and make a difference." />
+      </Head>
+
       <NavBar />
       <Box
         className={isMobile ? "" : styles.main}

@@ -25,6 +25,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import { PrimaryButton, TimeDisplay } from "@/components/styledElements";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 export const getServerSideProps = async () => {
   const proposals = await getProposals();
@@ -56,7 +57,13 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
 
   return (
     <main>
+      <Head>
+        <title>List Proposals</title>
+        <meta name="description" content="Explore current and past proposals discussed by fellow PERSAKA committees." />
+      </Head>
+
       <NavBar />
+
       <Box
         className={isMobile ? "" : styles.main}
       >

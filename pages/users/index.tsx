@@ -13,6 +13,7 @@ import { getUsers } from "../../prisma/operations/users/read";
 import { GlobalContext } from "../_app";
 import { PrimaryButton } from "@/components/styledElements";
 import { isMobile } from 'react-device-detect';
+import Head from "next/head";
 
 export const getServerSideProps = async () => {
   // Fetch data from external API
@@ -128,6 +129,11 @@ export default function Home({ listings }: { listings: any }) {
 
   return (
     <main>
+      <Head>
+        <title>List of Users</title>
+        <meta name="description" content="View a list of registered users actively participating in discussions and proposals." />
+      </Head>
+
       <NavBar />
       <Box
         className={isMobile ? "" : styles.main}
