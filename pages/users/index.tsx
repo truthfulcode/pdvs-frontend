@@ -2,7 +2,7 @@
 
 import styles from "../../styles/page.module.css";
 import NavBar from "@/components/NavBar";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSession } from "next-auth/react";
@@ -12,7 +12,7 @@ import RestrictedPage from "@/components/RestrictedPage";
 import { getUsers } from "../../prisma/operations/users/read";
 import { GlobalContext } from "../_app";
 import { PrimaryButton } from "@/components/styledElements";
-import { isBrowser, isMobile } from 'react-device-detect';
+import { MobileView, isBrowser, isMobile } from 'react-device-detect';
 import Head from "next/head";
 
 export const getServerSideProps = async () => {
@@ -141,7 +141,7 @@ export default function Home({ listings }: { listings: any }) {
         <RestrictedPage validAccess={!!session}>
           <Box
             sx={{
-              mt: isMobile ? 1 : undefined,
+              mt: isMobile ? 2 : undefined,
               width: isMobile ? undefined : "860px",
               display: "flex",
               justifyContent: isMobile ? "center" : "flex-end",
@@ -159,6 +159,11 @@ export default function Home({ listings }: { listings: any }) {
           ) : (
             <DataGrid rows={listings} columns={columns} />
           )}
+          <MobileView>
+            <Typography mt={1}>
+              **Swipe sideways to view more details**
+            </Typography>
+          </MobileView>
         </RestrictedPage>
       </Box>
     </main>
