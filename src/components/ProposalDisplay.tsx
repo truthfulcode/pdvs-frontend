@@ -35,7 +35,7 @@ import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import { PrimaryButton, TimeDisplay } from "./styledElements";
-import { isBrowser } from "react-device-detect";
+import { isBrowser, isMobile } from "react-device-detect";
 
 declare var window: any;
 
@@ -327,7 +327,7 @@ const ProposalDisplay = ({
                 }}
                 sx={{
                   mt: 2,
-                  width: "640px",
+                  width: isMobile ? undefined : "640px",
                   mb: 2,
                 }}
                 multiline
