@@ -49,6 +49,11 @@ export default function NavBar() {
                   Proposals
                 </Link>
               </li>
+              <li className="text-white">
+                <Link href="/glossary">
+                  Glossary
+                </Link>
+              </li>
             </ul>
           )}
         </div>
@@ -63,6 +68,9 @@ export default function NavBar() {
           )}
           <li className="text-white">
             <Link href="/proposals">Proposals</Link>
+          </li>
+          <li className="text-white">
+            <Link href="/glossary">Glossary</Link>
           </li>
         </ul>
       </div>
