@@ -76,7 +76,7 @@ export default function NavBar() {
         </ul>
       </div>
       <div className="navbar-end">
-        {fullName !== "Admin" && isBrowser && (
+        {fullName !== "ADMIN" && isBrowser && (
           <p className="rounded-full bg-gray text-white text-xs">
             {fullName.toLocaleUpperCase()}
           </p>

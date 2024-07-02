@@ -18,7 +18,7 @@ export default function Home() {
           "Welcome to the UTM PERSAKA Voting Platform, where School of Computing students can have a direct say in shaping the future of our community. Vote on proposals, discuss ideas, and make your voice heard!" />
       </Head>
       <NavBar />
-      {isMobile && userType !== "Admin" &&
+      {isMobile && userType !== "ADMIN" &&
         (
           <Box>
             <Typography sx={{
