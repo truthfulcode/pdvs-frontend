@@ -204,15 +204,17 @@ const ProposalDisplay = ({
             }}>
               <Like />
 
-              <IconButton
-                href={
-                  "https://testnet.snapshot.org/#/persaka.eth/proposal/" +
-                  proposal.proposalIdHash
-                }
-                target="_blank"
-              >
-                <OpenInNewIcon />
-              </IconButton>
+              <Tooltip title="View more details on Snapshot">
+                <IconButton
+                  href={
+                    "https://testnet.snapshot.org/#/persaka.eth/proposal/" +
+                    proposal.proposalIdHash
+                  }
+                  target="_blank"
+                >
+                  <OpenInNewIcon />
+                </IconButton>
+              </Tooltip>
 
               <Typography
                 sx={{
