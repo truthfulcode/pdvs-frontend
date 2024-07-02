@@ -114,15 +114,15 @@ export default function Home() {
 
       <NavBar />
       <Box
-        className={isMobile ? "" : styles.main}
+        className={isMobile ? "mx-12 my-8" : styles.main}
       >
 
         <RestrictedPage validAccess={!!isAuth}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl ">
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-center text-gray-900 md:text-4xl lg:text-5xl ">
               Create New Proposal{" "}
             </h1>
-            <form className="w-1/2" method="POST" onSubmit={handleRegistration}>
+            <form className="md:w-1/2" method="POST" onSubmit={handleRegistration}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Title
@@ -159,7 +159,7 @@ export default function Home() {
                   disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
-                  className="btn disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
+                  className="btn m-auto disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
                 >
                   CREATE
                 </button>

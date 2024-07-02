@@ -35,6 +35,7 @@ import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import { PrimaryButton, TimeDisplay } from "./styledElements";
+import { isBrowser } from "react-device-detect";
 
 declare var window: any;
 
@@ -149,7 +150,7 @@ const ProposalDisplay = ({
     return (
       <>
         <Box sx={{
-          border: "black solid 3px", borderRadius: 3, p: 2, mb: 2,
+          border: "black solid 3px", borderRadius: 3, p: 2, m: 1,
           minWidth: "75%"
         }}>
           <Box
@@ -341,7 +342,7 @@ const ProposalDisplay = ({
             )}
             <Typography pl={1} mb={2}>{comments.length} Comments</Typography>
             <Box sx={{
-              borderColor: "black", borderWidth: comments.length === 0 ? 2 : 0, borderRadius: 3, p: 1, minWidth: 600
+              borderColor: "black", borderWidth: comments.length === 0 ? 2 : 0, borderRadius: 3, p: 1, minWidth: isBrowser ? 600 : undefined
             }}>
               <List>
                 {comments.map((c, i) => (

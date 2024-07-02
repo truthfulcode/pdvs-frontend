@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { ReactNode } from "react";
 
 export default function RestrictedPage({
@@ -7,5 +8,5 @@ export default function RestrictedPage({
   validAccess: boolean;
   children: ReactNode;
 }) {
-    return validAccess ? children : <>Admin restricted page</>;
+  return validAccess ? children : <Typography className="text-center">Admin restricted page</Typography>;
 }

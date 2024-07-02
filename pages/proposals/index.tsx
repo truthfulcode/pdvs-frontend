@@ -24,7 +24,7 @@ import { useSession } from "next-auth/react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import { PrimaryButton, TimeDisplay } from "@/components/styledElements";
-import { isMobile } from 'react-device-detect';
+import { MobileView, isBrowser, isMobile } from 'react-device-detect';
 import Head from "next/head";
 
 export const getServerSideProps = async () => {
@@ -50,11 +50,12 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
     else {
       //
       setProposals(
-        proposals.filter((p) => p.title.toLowerCase().includes(searchText))
+        proposals.filter((p) => p.title.toLowerCase().includes(searchText.toLowerCase()))
       );
     }
   }, [searchText, _proposals, proposals]);
 
+  let filteredProposals = proposals.filter(p => (isAdminOrCM || p.status !== "Draft"));
   return (
     <main>
       <Head>
@@ -65,6 +66,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
       <NavBar />
 
       <Box
+        sx={{ m: 1 }}
         className={isMobile ? "" : styles.main}
       >
         {isAdminOrCM && (
@@ -85,7 +87,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
           </Box>
         )}
         <TextField
-          sx={{ width: "640px", mb: 2 }}
+          sx={{ width: isBrowser ? "640px" : "100%", mb: 1, mt: 2 }}
           id="outlined-basic"
           label="Search Proposal"
           variant="outlined"
@@ -95,9 +97,14 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
             setSearchText(e.target.value);
           }}
         />
+        <MobileView>
+          <Typography fontWeight="bold">
+            {filteredProposals.length} Proposals Found
+          </Typography>
+        </MobileView>
         <List>
-          {proposals.map((p, i) => {
-            return !(!isAdminOrCM && p.status === "Draft") ? (
+          {filteredProposals.map((p, i) => {
+            return (
               <ListItem
                 sx={{
                   border: "3px black solid",
@@ -190,9 +197,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                   </TimeDisplay>
                 </Box>
               </ListItem>
-            ) : (
-              <></>
-            );
+            )
           })}
         </List>
       </Box>

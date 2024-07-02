@@ -141,11 +141,11 @@ export default function Home() {
 
       <NavBar />
       <Box
-        className={isMobile ? "" : styles.main}
+        className={isMobile ? "mx-12 my-8" : styles.main}
       >
         <RestrictedPage validAccess={!!isAuth}>
           <>
-            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+            <h1 className="mb-16 text-4xl font-extrabold leading-none tracking-tight text-center text-gray-900 md:text-4xl lg:text-5xl">
               Create New User{" "}
             </h1>
             <form method="POST" onSubmit={handleRegistration}>
@@ -279,7 +279,7 @@ export default function Home() {
                 {data.cgpa.errorMsg && <p className="text-sm text-red-500 ">{data.cgpa.errorMsg}</p>}
               </div>
 
-              <div className="mb-4 w-52">
+              <div className="mb-4 w-52 m-auto">
                 <label
                   htmlFor="number-input"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -332,7 +332,7 @@ export default function Home() {
                 disabled={!canSubmit}
                 type="submit"
                 onClick={submit}
-                className="btn disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
+                className="btn m-auto disabled:bg-slate-50 btn-wide bg-white text-black hover:bg-slate-200"
               >
                 REGISTER
               </button>
