@@ -9,6 +9,7 @@ import {
   List,
   ListItem,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -65,6 +66,7 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
             }}
           >
             <PrimaryButton
+              sx={{ mb: 1 }}
               href="/proposals/create"
             >
               Create Proposal
@@ -130,15 +132,18 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                       )}
 
                       {p.status === "Published" && (
-                        <IconButton
-                          href={
-                            "https://testnet.snapshot.org/#/persaka.eth/proposal/" +
-                            p.proposalIdHash
-                          }
-                          target="_blank"
-                        >
-                          <OpenInNewIcon />
-                        </IconButton>
+                        <Tooltip title="View more details on Snapshot">
+
+                          <IconButton
+                            href={
+                              "https://testnet.snapshot.org/#/persaka.eth/proposal/" +
+                              p.proposalIdHash
+                            }
+                            target="_blank"
+                          >
+                            <OpenInNewIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </Box>
 
