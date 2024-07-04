@@ -56,7 +56,7 @@ export default function Proposals({
   isLiked: boolean;
   isAdmin: boolean;
 }) {
-  const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
+  const [proposal, ] = useState<Proposal>(JSON.parse(_proposal));
   const [comments, setComments] = useState<CustomComment[]>([]);
 
   async function queryComments() {

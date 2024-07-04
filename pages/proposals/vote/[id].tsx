@@ -81,7 +81,7 @@ export default function Proposals({
   const snap = new SnapshotGraphQL();
   const { address } = useAccount();
   const { isAuth } = useAuth()
-  const [proposal, setProposal] = useState<Proposal>(JSON.parse(_proposal));
+  const [proposal, ] = useState<Proposal>(JSON.parse(_proposal));
   const [graphProposal, setGraphProposal] = useState<GraphProposal>();
   const [graphVote, setGraphVote] = useState<GraphVote>();
   const [reason, setReason] = useState("");

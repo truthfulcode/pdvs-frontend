@@ -43,7 +43,7 @@ export class SnapshotVoting {
     snapshotBlockHeight: number;
   }) {
     const web3 = new Web3Provider(this.provider);
-    console.log("times", startTime, Math.floor(startTime + 60 * 60 * 24 * 7));
+
     const receipt = await client.proposal(web3, account, {
       space: spaceName,
       title: title,

@@ -20,8 +20,6 @@ export default function App({
   const [msg, setMsg] = React.useState<string>("");
   const [msgType, setMsgType] = React.useState<AlertType>("success");
 
-
-
   const openSnackBar = (_msg: string, _msgType: AlertType) => {
     setMsg(_msg);
     setMsgType(_msgType);

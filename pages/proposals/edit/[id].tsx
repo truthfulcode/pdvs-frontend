@@ -40,7 +40,6 @@ export const getServerSideProps = async (ctx: any) => {
     }
   }
 
-  console.log("p", proposal)
   // Pass data to the page via props
   return { props: { _proposal: stringify(proposal as Object), isLiked } };
 };
@@ -127,9 +126,6 @@ export default function Proposals({
       }
     );
   }
-  // const NoProposal = () => {
-  //   return <Typography>No Proposal Found</Typography>;
-  // };
 
   return (
     <main>
@@ -148,7 +144,6 @@ export default function Proposals({
               Edit Proposal{" "}
             </h1>
             <form
-              // className="w-1/2"
               method="POST"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -175,7 +170,6 @@ export default function Proposals({
                 </label>
                 <textarea
                   onChange={handleChange}
-                  // style={{width:'80%'}}
                   rows={4}
                   className="block mb-4 p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   id="content"
@@ -186,7 +180,6 @@ export default function Proposals({
               </div>
               <div className="flex justify-center">
                 <button
-                  // disabled={!canSubmit}
                   type="submit"
                   onClick={submit}
                   className="btn btn-wide text-white"

@@ -53,7 +53,7 @@ export default function handler(
               return res.status(401).json({message: "Failed to broadcast revoke user cgpa to the blockchain"})
             }
 
-            const result = await deleteUser(userId);
+            await deleteUser(userId);
 
           await vt.execute(simulation?.request);
 

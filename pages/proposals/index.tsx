@@ -34,11 +34,9 @@ export const getServerSideProps = async () => {
 };
 
 export default function Proposals({ _proposals }: { _proposals: any }) {
-  const { address, isConnected } = useAccount();
-  const { status } = useSession();
-  const { isAuth } = useAuth();
+  const { isConnected } = useAccount();
 
-  const { userType, isAdminOrCM } = useUser();
+  const { isAdminOrCM } = useUser();
 
   const [proposals, setProposals] = useState<Proposal[]>(
     JSON.parse(_proposals)
@@ -120,7 +118,6 @@ export default function Proposals({ _proposals }: { _proposals: any }) {
                     display: "flex",
                     flexDirection: "column",
                     width: 600,
-                    // maxWidth: 900,
                     minHeight: 150,
                   }}
                 >

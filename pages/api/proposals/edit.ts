@@ -52,11 +52,8 @@ export default function handler(
               // TODO add extra checking
               const id = proposalDigest.id;
               const ipfs = proposalDigest.ipfs;
-              console.log("hash id", id);
-              console.log("digest", proposalDigest);
               const snap = new SnapshotGraphQL();
               const proposal = await snap.getProposal(id as string);
-              console.log(proposal);
               if (!proposal) throw Error("Proposal not found!");
               if (proposal.space.id !== spaceName)
                 throw Error("Invalid space name!");

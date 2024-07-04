@@ -24,7 +24,7 @@ export default function handler(
       if (session) {
         const _isUserAdmin = await isUserAdminOrCM(session.address);
         if (_isUserAdmin) {
-          const result = await createProposal({ title, content });
+          await createProposal({ title, content });
 
           return res.status(200).json({ message: "success" });
         } else {

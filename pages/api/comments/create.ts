@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]";
-import { AdminVotingToken } from "@/AdminVotingToken";
 import { getUserByAddress } from "../../../prisma/operations/users/read";
 import { createComment } from "../../../prisma/operations/comments/create";
 
@@ -11,8 +10,6 @@ export default function handler(
     message: string;
   }>
 ) {
-  const vt = new AdminVotingToken();
-
   const { method, body } = req;
   const { proposalId, content } = body;
 
@@ -28,7 +25,7 @@ export default function handler(
         const user = await getUserByAddress(session.address);
 
         if (user) {
-          const result = await createComment({
+          await createComment({
             userId: user.id,
             proposalId,
             content,

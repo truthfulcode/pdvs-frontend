@@ -1,5 +1,4 @@
 import { Button, Typography, styled } from '@mui/material'
-import React from 'react'
 
 export const PrimaryButton = styled(Button)({
   borderRadius: 8,
@@ -11,7 +10,6 @@ export const PrimaryButton = styled(Button)({
     backgroundColor: '#47a1ff88',
     boxShadow: 'none',
   },
-  // mr: 0.5,
 })
 
 export const TimeDisplay = styled(Typography)({

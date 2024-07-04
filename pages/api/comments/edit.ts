@@ -22,7 +22,7 @@ export default function handler(
       );
       if (session) {
         const u = await getUserByAddress(session.address);
-        const result = await updateComment(u ? u.id : "", commentId, content);
+        await updateComment(u ? u.id : "", commentId, content);
 
         return res.status(200).json({ message: "success" });
       } else {

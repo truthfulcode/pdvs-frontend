@@ -27,7 +27,6 @@ export default function Home() {
               textAlign: "center"
             }}>Welcome {fullName}!</Typography>
           </Box>
-
         )
       }
       <Box

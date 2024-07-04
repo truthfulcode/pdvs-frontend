@@ -1,6 +1,5 @@
 "use client";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import * as React from "react";
 import { useAccount, useConnect } from "wagmi";
 import Link from "next/link";

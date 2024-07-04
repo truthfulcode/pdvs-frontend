@@ -25,7 +25,7 @@ export default function handler(
         const _isUserAdmin = await isUserAdmin(session.address);
 
         if (_isUserAdmin) {
-          const result = await deleteComment(commentId);
+          await deleteComment(commentId);
 
           return res.status(200).json({ message: "success" });
         } else {

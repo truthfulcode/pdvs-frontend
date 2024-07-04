@@ -14,11 +14,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { isMobile } from 'react-device-detect';
 import Head from "next/head";
 
-const styling = {
-  row: { display: "flex", flexDirection: "row" },
-  column: { display: "flex", flexDirection: "column" },
-};
-
 type VariableState = {
   value: string;
   errorMsg?: string;

@@ -27,7 +27,6 @@ const defaultValue = {
   errorMsg: undefined,
 } as VariableState;
 
-type varKeys = "address" | "matricNumber" | "cgpa" | "userType";
 const userTypes = ["STUDENT", "CM"];
 type VarKeys = {
   address: VariableState;
@@ -57,8 +56,6 @@ export default function Home() {
   const handleRegistration = (e: any) => {
     e.preventDefault();
   };
-
-  console.log("data", data)
 
   const handleChange = useCallback((e: any) => {
     const { name, value } = e.target;
