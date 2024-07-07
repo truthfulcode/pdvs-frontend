@@ -50,7 +50,6 @@ export default function Home() {
           </Typography>
         </Box>
         <Box>
-          {/* <Typography>B</Typography> */}
           <Image
             src="/voting.png"
             width={500}

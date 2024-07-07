@@ -46,7 +46,7 @@ model Comment {
     id         String    @id @default(auto()) @map("_id") @db.ObjectId
     content    String
     createdAt  DateTime
-    author     User      @relation(fields: [authorId], references: [id])
+    author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
     authorId   String    @db.ObjectId
     proposal   Proposal  @relation(fields: [proposalId], references: [id])
     proposalId String    @db.ObjectId

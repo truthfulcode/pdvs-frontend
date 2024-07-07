@@ -104,14 +104,14 @@ async function main() {
         userType: "ADMIN",
       },
       {
-        cgpa: 350,
+        cgpa: 200,
         fullName: "Ahmed khaled",
         matricNumber: "A20EE3021",
         userAddress: ADDRESSES.u1,
         userType: "STUDENT",
       },
       {
-        cgpa: 350,
+        cgpa: 300,
         fullName: "Ali Said",
         matricNumber: "A18CV2011",
         userAddress: ADDRESSES.u2,
@@ -125,7 +125,7 @@ async function main() {
         userType: "STUDENT",
       },
       {
-        cgpa: 350,
+        cgpa: 400,
         fullName: "Kheir edin",
         matricNumber: "A22MC0200",
         userAddress: ADDRESSES.u4,
@@ -136,10 +136,10 @@ async function main() {
 
   // TODO if needed
 
-  // await mint(ADDRESSES.u1, 350, "STUDENT");
-  // await mint(ADDRESSES.u2, 350, "CM");
+  // await mint(ADDRESSES.u1, 200, "STUDENT");
+  // await mint(ADDRESSES.u2, 300, "CM");
   // await mint(ADDRESSES.u3, 350, "STUDENT");
-  // await mint(ADDRESSES.u4, 350, "CM");
+  // await mint(ADDRESSES.u4, 400, "CM");
 
   const u1 = await prisma.user.findFirst({
     where: {
