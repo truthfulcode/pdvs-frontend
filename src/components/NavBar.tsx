@@ -39,20 +39,14 @@ export default function NavBar() {
             >
               {userType === "ADMIN" && (
                 <li className="text-white">
-                  <Link href="/users">
-                    Users
-                  </Link>
+                  <a href="/users" target="_blank">Users</a>
                 </li>
               )}
               <li className="text-white">
-                <Link href="/proposals">
-                  Proposals
-                </Link>
+                <a href="/proposals" target="_blank">Proposals</a>
               </li>
               <li className="text-white">
-                <Link href="/glossary">
-                  Glossary
-                </Link>
+                <a href="/glossary" target="_blank">Glossary</a>
               </li>
             </ul>
           )}
@@ -63,19 +57,19 @@ export default function NavBar() {
         <ul className="menu menu-horizontal px-1">
           {userType === "ADMIN" && (
             <li className="text-white">
-              <Link href="/users">Users</Link>
+              <a href="/users" target="_blank">Users</a>
             </li>
           )}
           <li className="text-white">
-            <Link href="/proposals">Proposals</Link>
+            <a href="/proposals" target="_blank">Proposals</a>
           </li>
           <li className="text-white">
-            <Link href="/glossary">Glossary</Link>
+            <a href="/glossary" target="_blank">Glossary</a>
           </li>
         </ul>
       </div>
       <div className="navbar-end">
-        {fullName !== "ADMIN" && isBrowser && (
+        {userType !== "ADMIN" && isBrowser && (
           <p className="rounded-full bg-gray text-white text-xs">
             {fullName.toLocaleUpperCase()}
           </p>

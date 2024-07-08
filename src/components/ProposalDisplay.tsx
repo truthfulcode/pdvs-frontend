@@ -191,7 +191,6 @@ const ProposalDisplay = ({
                       Snapshot Block:{" "}
                       {Number(proposal.blockNumberSnapshot)}
                     </Link>
-
                   </Tooltip>
                 </Typography>
               )}
