@@ -3,8 +3,6 @@ import { AdminVotingToken } from "../src/AdminVotingToken";
 import { Address } from "viem";
 
 async function main() {
-  const filler =
-    "Lorem ipsum dolor sit amet, sea mazim insolens ei, vis sint volumus ullamcorper ex. Quo ne alienum eligendi similique. Amet alii pri et. Prima quaestio eleifend at pri, blandit perfecto menandri cu est. Cu cum nihil consetetur, consul mucius et eum, tibique adipisci ad pro. Erant doctus efficiendi et quo.";
 
   const proposals = await prisma.proposal.createMany({
     data: [
