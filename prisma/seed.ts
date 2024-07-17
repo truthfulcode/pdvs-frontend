@@ -86,13 +86,19 @@ async function main() {
     cgpa: number,
     userType: "STUDENT" | "CM"
   ) {
-    const simulation = await vt.simulate("adjust", [
-      userAddress as Address,
-      cgpa,
-      userType === "CM" ? 2 : 1,
-    ]);
-    await vt.execute(simulation.request);
+    try {
+      const simulation = await vt.simulate("adjust", [
+        userAddress as Address,
+        cgpa,
+        userType === "CM" ? 2 : 1,
+      ]);
+      await vt.execute(simulation.request);
+    } catch(err) {
+      console.log(userAddress," likely has been minted")
+    }
   }
+
+  
 
   const users = await prisma.user.createMany({
     data: [
@@ -134,12 +140,10 @@ async function main() {
     ],
   });
 
-  // TODO if needed
-
-  // await mint(ADDRESSES.u1, 200, "STUDENT");
-  // await mint(ADDRESSES.u2, 300, "CM");
-  // await mint(ADDRESSES.u3, 350, "STUDENT");
-  // await mint(ADDRESSES.u4, 400, "CM");
+  await mint(ADDRESSES.u1, 200, "STUDENT");
+  await mint(ADDRESSES.u2, 300, "CM");
+  await mint(ADDRESSES.u3, 350, "STUDENT");
+  await mint(ADDRESSES.u4, 400, "CM");
 
   const u1 = await prisma.user.findFirst({
     where: {
